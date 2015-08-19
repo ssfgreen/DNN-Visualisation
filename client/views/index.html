@@ -1,0 +1,35 @@
+<html>
+
+  <head>
+      <title>Neural Net</title>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.6/ngStorage.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-resource.min.js"></script>
+  </head>
+
+  <body ng-app="NeuralNet">
+  
+      <div ng-controller="NeuralController">
+          <h1>Hello World</h1>
+          <div ng-repeat="result in results"><a href="" ng-click="getID(result.id)"> {{result.name}} </a></div>
+          
+
+        <form name="myForm">
+            <label for="repeatSelect"> Repeat select: </label>
+            <select name="repeatSelect" ng-model="result_id">
+              <option ng-repeat="result in results" value="{{result.id}}">{{result.name}}</option>
+            </select>
+        </form>
+
+        <a href="/">HOME</a>
+        <a href="/meta">META</a>
+        <a href="/epoch">EPOCH</a>
+        <a href="/layer">LAYER</a>
+
+      </div>
+
+      </div>
+      <script type="text/javascript" src="app.js"></script>
+  </body>
+
+</html>
