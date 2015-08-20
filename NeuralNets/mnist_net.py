@@ -18,16 +18,21 @@ import lasagne
 import theano
 import theano.tensor as T
 import time
+# sys.path.insert(0, '../Helpers')
+
+# this finds the files in other directories
+sys.path.insert(0, './Helpers')
 
 # My Imports
 import h5py
+
 # from pickle_io import write_model_data
+from bn_saving import *
 from neural_net_saving import *
 from IDAPICourseworkLibrary import *
 
 # inmport tsne plotting and created bn_saving tools
 from tsne import bh_sne
-from bn_saving import *
 
 
 PY2 = sys.version_info[0] == 2
@@ -43,269 +48,329 @@ else:
     def pickle_load(f, encoding):
         return pickle.load(f, encoding=encoding)
 
-DATA_URL = 'http://deeplearning.net/data/mnist/mnist.pkl.gz'
-DATA_FILENAME = 'mnist.pkl.gz'
+class Net:
 
-NUM_EPOCHS = 500
-BATCH_SIZE = 600
-NUM_HIDDEN_UNITS = 512
-LEARNING_RATE = 0.01
-MOMENTUM = 0.9
+    def __init__(self, DATA_URL, DATA_FILENAME, NUM_EPOCHS, BATCH_SIZE, 
+        NUM_HIDDEN_UNITS, LEARNING_RATE, MOMENTUM, DEBUG):
+            self.DATA_URL = DATA_URL
+            self.DATA_FILENAME = DATA_FILENAME
+            self.NUM_EPOCHS = NUM_EPOCHS
+            self.BATCH_SIZE = BATCH_SIZE
+            self.NUM_HIDDEN_UNITS = NUM_HIDDEN_UNITS
+            self.LEARNING_RATE = LEARNING_RATE
+            self.MOMENTUM = MOMENTUM
+            self.DEBUG = DEBUG
 
-DEBUG = True
-
-
-def _load_data(url=DATA_URL, filename=DATA_FILENAME):
-    """Load data from `url` and store the result in `filename`."""
-    if not os.path.exists(filename):
-        print("Downloading MNIST dataset")
-        urlretrieve(url, filename)
-
-    with gzip.open(filename, 'rb') as f:
-        return pickle_load(f, encoding='latin-1')
+    # def check(self, data_url = None):
+    #     if data_url is None:
+    #         print("none")
+    #         data_url = self.DATA_URL
+    #     print (data_url)
 
 
-def load_data():
-    """Get data with labels, split into training, validation and test set."""
-    data = _load_data()
-    X_train, y_train = data[0]
-    X_valid, y_valid = data[1]
-    X_test, y_test = data[2]
+    def _load_data(self, url=None, filename=None):
+        """Load data from `url` and store the result in `filename`."""
+        if url is None:
+            url = self.DATA_URL
+        if filename is None: 
+            filename = self.DATA_FILENAME
 
-    if(DEBUG):
-        print ("X_train shape: ", X_train.shape)
-        print ("y_train shape: ", y_train.shape)
-        print ("X_valid shape: ", X_valid.shape)
-        print ("y_valid shape: ", y_valid.shape)
-        print ("X_test shape: ", X_test.shape)
-        print ("y_test shape: ", y_test.shape)
+        if not os.path.exists(filename):
+            print("Downloading MNIST dataset")
+            urlretrieve(url, filename)
 
-    return dict(
-        X_train=theano.shared(lasagne.utils.floatX(X_train)),
-        y_train=T.cast(theano.shared(y_train), 'int32'),
-        X_valid=theano.shared(lasagne.utils.floatX(X_valid)),
-        y_valid=T.cast(theano.shared(y_valid), 'int32'),
-        y_valid_raw = y_valid,
-        X_test=theano.shared(lasagne.utils.floatX(X_test)),
-        y_test=T.cast(theano.shared(y_test), 'int32'),
-        num_examples_train=X_train.shape[0],
-        num_examples_valid=X_valid.shape[0],
-        num_examples_test=X_test.shape[0],
-        input_dim=X_train.shape[1],
-        output_dim=10,
-    )
+        with gzip.open(filename, 'rb') as f:
+            return pickle_load(f, encoding='latin-1')
 
 
-def build_model(input_dim, output_dim,
-                batch_size=BATCH_SIZE, num_hidden_units=NUM_HIDDEN_UNITS):
-    """Create a symbolic representation of a neural network with `intput_dim`
-    input nodes, `output_dim` output nodes and `num_hidden_units` per hidden
-    layer.
+    def load_data(self):
+        """Get data with labels, split into training, validation and test set."""
+        data = self._load_data()
+        X_train, y_train = data[0]
+        X_valid, y_valid = data[1]
+        X_test, y_test = data[2]
 
-    The training function of this model must have a mini-batch size of
-    `batch_size`.
+        if(self.DEBUG):
+            print ("X_train shape: ", X_train.shape)
+            print ("y_train shape: ", y_train.shape)
+            print ("X_valid shape: ", X_valid.shape)
+            print ("y_valid shape: ", y_valid.shape)
+            print ("X_test shape: ", X_test.shape)
+            print ("y_test shape: ", y_test.shape)
 
-    A theano expression which represents such a network is returned.
-    """
-
-    # INPUT: 600 * 784
-    l_in = lasagne.layers.InputLayer(
-        shape=(batch_size, input_dim),
-    )
-
-    # LAYER 1: 512, ReLU
-    l_hidden1 = lasagne.layers.DenseLayer(
-        l_in,
-        num_units=num_hidden_units,
-        nonlinearity=lasagne.nonlinearities.rectify,
-    )
-    l_hidden1_dropout = lasagne.layers.DropoutLayer(
-        l_hidden1,
-        p=0.5,
-    )
-
-    # LAYER 2: 512, ReLU
-    l_hidden2 = lasagne.layers.DenseLayer(
-        l_hidden1_dropout,
-        num_units=num_hidden_units,
-        nonlinearity=lasagne.nonlinearities.rectify,
-    )
-    l_hidden2_dropout = lasagne.layers.DropoutLayer(
-        l_hidden2,
-        p=0.5,
-    )
-
-    # OUTPUT: 10 classes, softmax 
-    l_out = lasagne.layers.DenseLayer(
-        l_hidden2_dropout,
-        num_units=output_dim,
-        nonlinearity=lasagne.nonlinearities.softmax,
-    )
-    return l_out
+        return dict(
+            X_train=theano.shared(lasagne.utils.floatX(X_train)),
+            y_train=T.cast(theano.shared(y_train), 'int32'),
+            X_valid=theano.shared(lasagne.utils.floatX(X_valid)),
+            y_valid=T.cast(theano.shared(y_valid), 'int32'),
+            y_valid_raw = y_valid,
+            X_test=theano.shared(lasagne.utils.floatX(X_test)),
+            y_test=T.cast(theano.shared(y_test), 'int32'),
+            num_examples_train=X_train.shape[0],
+            num_examples_valid=X_valid.shape[0],
+            num_examples_test=X_test.shape[0],
+            input_dim=X_train.shape[1],
+            output_dim=10,
+        )
 
 
-def create_iter_functions(dataset, output_layer,
-                          X_tensor_type=T.matrix,
-                          batch_size=BATCH_SIZE,
-                          learning_rate=LEARNING_RATE, momentum=MOMENTUM):
-    """Create functions for training, validation and testing to iterate one
-       epoch.
-    """
-    batch_index = T.iscalar('batch_index')
-    X_batch = X_tensor_type('x')
-    y_batch = T.ivector('y')
-    batch_slice = slice(batch_index * batch_size,
-                        (batch_index + 1) * batch_size)
+    def build_model(self, input_dim, output_dim,
+                    batch_size=None, num_hidden_units=None):
+        """Create a symbolic representation of a neural network with `intput_dim`
+        input nodes, `output_dim` output nodes and `num_hidden_units` per hidden
+        layer.
 
-    output = lasagne.layers.get_output(output_layer, X_batch)
-    loss_train = lasagne.objectives.categorical_crossentropy(output, y_batch)
-    loss_train = loss_train.mean()
+        The training function of this model must have a mini-batch size of
+        `batch_size`.
 
-    output_test = lasagne.layers.get_output(output_layer, X_batch,
-                                            deterministic=True)
+        A theano expression which represents such a network is returned.
+        """
 
-    loss_eval = lasagne.objectives.categorical_crossentropy(output_test,
-                                                            y_batch)
+        if batch_size is None:
+            batch_size = self.BATCH_SIZE
+        if num_hidden_units is None:
+            num_hidden_units = self.NUM_HIDDEN_UNITS
 
-    loss_eval = loss_eval.mean()
+        # INPUT: 600 * 784
+        l_in = lasagne.layers.InputLayer(
+            shape=(batch_size, input_dim),
+        )
 
-    pred = T.argmax(output_test, axis=1)
-    accuracy = T.mean(T.eq(pred, y_batch), dtype=theano.config.floatX)
+        # LAYER 1: 512, ReLU
+        l_hidden1 = lasagne.layers.DenseLayer(
+            l_in,
+            num_units=num_hidden_units,
+            nonlinearity=lasagne.nonlinearities.rectify,
+        )
+        l_hidden1_dropout = lasagne.layers.DropoutLayer(
+            l_hidden1,
+            p=0.5,
+        )
 
-    all_params = lasagne.layers.get_all_params(output_layer)
+        # LAYER 2: 512, ReLU
+        l_hidden2 = lasagne.layers.DenseLayer(
+            l_hidden1_dropout,
+            num_units=num_hidden_units,
+            nonlinearity=lasagne.nonlinearities.rectify,
+        )
+        l_hidden2_dropout = lasagne.layers.DropoutLayer(
+            l_hidden2,
+            p=0.5,
+        )
 
-    updates = lasagne.updates.nesterov_momentum(
-        loss_train, all_params, learning_rate, momentum)
-
-    iter_train = theano.function(
-        [batch_index],
-        loss_train,
-        updates=updates,
-        givens={
-            X_batch: dataset['X_train'][batch_slice],
-            y_batch: dataset['y_train'][batch_slice],
-        },
-    )
-
-    iter_valid = theano.function(
-        [batch_index],
-        [loss_eval, accuracy],
-        givens={
-            X_batch: dataset['X_valid'][batch_slice],
-            y_batch: dataset['y_valid'][batch_slice],
-        },
-    )
-
-    iter_test = theano.function(
-        [batch_index],
-        [loss_eval, accuracy],
-        givens={
-            X_batch: dataset['X_test'][batch_slice],
-            y_batch: dataset['y_test'][batch_slice],
-        },
-    )
+        # OUTPUT: 10 classes, softmax 
+        l_out = lasagne.layers.DenseLayer(
+            l_hidden2_dropout,
+            num_units=output_dim,
+            nonlinearity=lasagne.nonlinearities.softmax,
+        )
+        return l_out
 
 
+    def create_iter_functions(self, dataset, output_layer,
+                              X_tensor_type=T.matrix,
+                              batch_size=None,
+                              learning_rate=None, momentum=None):
+        """Create functions for training, validation and testing to iterate one
+           epoch.
+        """
 
-    return dict(
-        train=iter_train,
-        valid=iter_valid,
-        test=iter_test,
-    )
+        if batch_size is None:
+            batch_size = self.BATCH_SIZE
+        if learning_rate is None:
+            learning_rate = self.LEARNING_RATE
+        if momentum is None:
+            momentum = self.MOMENTUM
 
+        batch_index = T.iscalar('batch_index')
+        X_batch = X_tensor_type('x')
+        y_batch = T.ivector('y')
+        batch_slice = slice(batch_index * batch_size,
+                            (batch_index + 1) * batch_size)
 
-def train(iter_funcs, dataset, batch_size=BATCH_SIZE):
-    """Train the model with `dataset` with mini-batch training. Each
-       mini-batch has `batch_size` recordings.
-    """
-    num_batches_train = dataset['num_examples_train'] // batch_size   # // means floor division
-    num_batches_valid = dataset['num_examples_valid'] // batch_size
+        output = lasagne.layers.get_output(output_layer, X_batch)
+        loss_train = lasagne.objectives.categorical_crossentropy(output, y_batch)
+        loss_train = loss_train.mean()
 
-    for epoch in itertools.count(1): # counts from 1
-        batch_train_losses = []
-        for b in range(num_batches_train):
-            batch_train_loss = iter_funcs['train'](b)
-            batch_train_losses.append(batch_train_loss)
+        output_test = lasagne.layers.get_output(output_layer, X_batch,
+                                                deterministic=True)
 
-        avg_train_loss = np.mean(batch_train_losses)
+        loss_eval = lasagne.objectives.categorical_crossentropy(output_test,
+                                                                y_batch)
 
-        batch_valid_losses = []
-        batch_valid_accuracies = []
-        for b in range(num_batches_valid):
-            batch_valid_loss, batch_valid_accuracy = iter_funcs['valid'](b)
-            batch_valid_losses.append(batch_valid_loss)
-            batch_valid_accuracies.append(batch_valid_accuracy)
+        loss_eval = loss_eval.mean()
 
-        avg_valid_loss = np.mean(batch_valid_losses)
-        avg_valid_accuracy = np.mean(batch_valid_accuracies)
+        pred = T.argmax(output_test, axis=1)
+        accuracy = T.mean(T.eq(pred, y_batch), dtype=theano.config.floatX)
 
-        yield {
-            'number': epoch,
-            'train_loss': avg_train_loss,
-            'valid_loss': avg_valid_loss,
-            'valid_accuracy': avg_valid_accuracy,
-        }
+        all_params = lasagne.layers.get_all_params(output_layer)
+
+        updates = lasagne.updates.nesterov_momentum(
+            loss_train, all_params, learning_rate, momentum)
+
+        iter_train = theano.function(
+            [batch_index],
+            loss_train,
+            updates=updates,
+            givens={
+                X_batch: dataset['X_train'][batch_slice],
+                y_batch: dataset['y_train'][batch_slice],
+            },
+        )
+
+        iter_valid = theano.function(
+            [batch_index],
+            [loss_eval, accuracy],
+            givens={
+                X_batch: dataset['X_valid'][batch_slice],
+                y_batch: dataset['y_valid'][batch_slice],
+            },
+        )
+
+        iter_test = theano.function(
+            [batch_index],
+            [loss_eval, accuracy],
+            givens={
+                X_batch: dataset['X_test'][batch_slice],
+                y_batch: dataset['y_test'][batch_slice],
+            },
+        )
 
 
 
-def main(num_epochs=NUM_EPOCHS):
-    print("Loading data...")
-    dataset = load_data()
-
-    print("Building model and compiling functions...")
-    output_layer = build_model(
-        input_dim=dataset['input_dim'],
-        output_dim=dataset['output_dim'],
-    )
-    iter_funcs = create_iter_functions(dataset, output_layer)
-
-    print("Starting training...")
-
-    # creating an experiment folder for file structure
-    experiment_folder = new_experiment_folder("experiments")
-
-    now = time.time()
-    try:
-        for epoch in train(iter_funcs, dataset):
-            print("Epoch {} of {} took {:.3f}s".format(
-                epoch['number'], num_epochs, time.time() - now))
-            now = time.time()
-            print("  training loss:\t\t{:.6f}".format(epoch['train_loss']))
-            print("  validation loss:\t\t{:.6f}".format(epoch['valid_loss']))
-            print("  validation accuracy:\t\t{:.2f} %%".format(
-                epoch['valid_accuracy'] * 100))
+        return dict(
+            train=iter_train,
+            valid=iter_valid,
+            test=iter_test,
+        )
 
 
-            if epoch['number'] == 1:
-                save_params(experiment_folder, "testing", output_layer, DATA_FILENAME, NUM_EPOCHS, BATCH_SIZE, NUM_HIDDEN_UNITS, LEARNING_RATE, 
-                    MOMENTUM, epoch['train_loss'], epoch['valid_loss'], (epoch['valid_accuracy'] * 100), dataset['output_dim'], dataset['input_dim'])
+    def train(self, iter_funcs, dataset, batch_size=None):
+        """Train the model with `dataset` with mini-batch training. Each
+           mini-batch has `batch_size` recordings.
+        """
 
-            # adding inc ode to save activations
+        if batch_size is None:
+            batch_size = self.BATCH_SIZE
 
-            # X_val = dataset['X_valid']
-            # print (X_val.eval())
+        num_batches_train = dataset['num_examples_train'] // batch_size   # // means floor division
+        num_batches_valid = dataset['num_examples_valid'] // batch_size
 
-            if epoch['number'] % 2 == 0:
-            # if epoch['number'] == 1:
-                num_coords = 500
-                plot_activations(experiment_folder, epoch, dataset, output_layer, num_coords)
-            if epoch['number'] % 10 == 0:
-                save_activations_test(experiment_folder, "testing", epoch, dataset, output_layer, "csv", "NUMPY")
-                save_weight_bias_slow(experiment_folder, "testing", epoch, output_layer, "csv", "NUMPY")
+        for epoch in itertools.count(1): # counts from 1
+            batch_train_losses = []
+            for b in range(num_batches_train):
+                batch_train_loss = iter_funcs['train'](b)
+                batch_train_losses.append(batch_train_loss)
 
-            if epoch['number'] >= num_epochs:
-                # save_params(output_layer, datafile, num_epochs, batch_size, num_hidden_units, learning_rate
-    # momentum, train_loss, valid_loss, valid_accuracy, output_dim, input_dim)
-                save_params("testing", output_layer, DATA_FILENAME, NUM_EPOCHS, BATCH_SIZE, NUM_HIDDEN_UNITS, LEARNING_RATE, 
-                    MOMENTUM, epoch['train_loss'], epoch['valid_loss'], (epoch['valid_accuracy'] * 100), dataset['output_dim'], dataset['input_dim'])
-                break
+            avg_train_loss = np.mean(batch_train_losses)
 
-    except KeyboardInterrupt:
-        pass
+            batch_valid_losses = []
+            batch_valid_accuracies = []
+            for b in range(num_batches_valid):
+                batch_valid_loss, batch_valid_accuracy = iter_funcs['valid'](b)
+                batch_valid_losses.append(batch_valid_loss)
+                batch_valid_accuracies.append(batch_valid_accuracy)
 
-    return output_layer
+            avg_valid_loss = np.mean(batch_valid_losses)
+            avg_valid_accuracy = np.mean(batch_valid_accuracies)
 
+            yield {
+                'number': epoch,
+                'train_loss': avg_train_loss,
+                'valid_loss': avg_valid_loss,
+                'valid_accuracy': avg_valid_accuracy,
+            }
+
+
+
+    def main(self,num_epochs=None):
+        print("Loading data...")
+        
+        if num_epochs is None:
+            num_epochs = self.NUM_EPOCHS
+
+        dataset = self.load_data()
+
+        print("Building model and compiling functions...")
+        output_layer = self.build_model(
+            input_dim=dataset['input_dim'],
+            output_dim=dataset['output_dim'],
+        )
+        iter_funcs = self.create_iter_functions(dataset, output_layer)
+
+        print("Starting training...")
+
+        # creating an experiment folder for file structure
+        experiment_folder = new_experiment_folder("experiments")
+
+        now = time.time()
+        try:
+            for epoch in self.train(iter_funcs, dataset):
+                print("Epoch {} of {} took {:.3f}s".format(
+                    epoch['number'], num_epochs, time.time() - now))
+                now = time.time()
+                print("  training loss:\t\t{:.6f}".format(epoch['train_loss']))
+                print("  validation loss:\t\t{:.6f}".format(epoch['valid_loss']))
+                print("  validation accuracy:\t\t{:.2f} %%".format(
+                    epoch['valid_accuracy'] * 100))
+
+
+                if epoch['number'] == 1:
+                    save_params(experiment_folder, "testing", output_layer, self.DATA_FILENAME, self.NUM_EPOCHS, self.BATCH_SIZE, self.NUM_HIDDEN_UNITS, self.LEARNING_RATE, 
+                        self.MOMENTUM, epoch['train_loss'], epoch['valid_loss'], (epoch['valid_accuracy'] * 100), dataset['output_dim'], dataset['input_dim'])
+
+                # adding inc ode to save activations
+
+                # X_val = dataset['X_valid']
+                # print (X_val.eval())
+
+                if epoch['number'] % 2 == 0:
+                # if epoch['number'] == 1:
+                    num_coords = 500
+                    plot_activations(experiment_folder, epoch, dataset, output_layer, num_coords)
+                if epoch['number'] % 10 == 0:
+                    save_activations_test(experiment_folder, "testing", epoch, dataset, output_layer, "csv", "NUMPY")
+                    save_weight_bias_slow(experiment_folder, "testing", epoch, output_layer, "csv", "NUMPY")
+
+                if epoch['number'] >= num_epochs:
+                    # save_params(output_layer, datafile, num_epochs, batch_size, num_hidden_units, learning_rate
+        # momentum, train_loss, valid_loss, valid_accuracy, output_dim, input_dim)
+                    save_params(experiment_folder,"testing", output_layer, self.DATA_FILENAME, self.NUM_EPOCHS, self.BATCH_SIZE, self.NUM_HIDDEN_UNITS, self.LEARNING_RATE, 
+                        self.MOMENTUM, epoch['train_loss'], epoch['valid_loss'], (epoch['valid_accuracy'] * 100), dataset['output_dim'], dataset['input_dim'])
+                    break
+
+        except KeyboardInterrupt:
+            pass
+
+        return output_layer
+
+
+def run_net(DATA_URL, DATA_FILENAME, NUM_EPOCHS, BATCH_SIZE, 
+    NUM_HIDDEN_UNITS, LEARNING_RATE, MOMENTUM, DEBUG):
+        Net_running = Net(DATA_URL, DATA_FILENAME, NUM_EPOCHS, BATCH_SIZE, 
+    NUM_HIDDEN_UNITS, LEARNING_RATE, MOMENTUM, DEBUG)
+        Net_running.main()
 
 
 if __name__ == '__main__':
-    main()
+        
+    run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz', 
+        500, 600, 512, 0.01, 0.9, False)
+    # Net1.main()
+
+
+# def change_epochs(epochs):
+#     NUM_EPOCHS = epochs
+
+        # self.DATA_URL = 'http://deeplearning.net/data/mnist/mnist.pkl.gz'
+        # self.DATA_FILENAME = 'mnist.pkl.gz'
+
+        # self.NUM_EPOCHS = 500
+        # self.BATCH_SIZE = 600
+        # self.NUM_HIDDEN_UNITS = 512
+        # self.LEARNING_RATE = 0.01
+        # self.MOMENTUM = 0.9
+        # self.DEBUG = True
+
+    # def __init__(self, DATA_URL, DATA_FILENAME, NUM_EPOCHS, BATCH_SIZE, 
+    #     NUM_HIDDEN_UNITS, LEARNING_RATE, MOMENTUM, DEBUG):
