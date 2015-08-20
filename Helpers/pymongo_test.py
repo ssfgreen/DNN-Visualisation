@@ -1,6 +1,13 @@
 from pymongo import MongoClient
 import datetime
 
+'''
+    this is the mongobd (through pymongo) example file for saving
+    TODO - implement the saving 
+
+'''
+
+
 # this is the default: but can also call simply MongoClient()
 client = MongoClient('mongodb://localhost:27017/') 
 

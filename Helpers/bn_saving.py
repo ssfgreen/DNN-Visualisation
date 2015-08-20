@@ -25,6 +25,13 @@ from sklearn.lda import LDA
 from moviepy.video.io.bindings import mplfig_to_npimage
 import moviepy.editor as mpy
 
+''' this file does:
+    - BarnesHut SNE plotting
+    - PCA plotting
+    - Video GIF producing
+
+    ---> and all the I/O for that too
+'''
 
 
 def plot_bn_sne(data, labels, size):
@@ -70,6 +77,42 @@ def plot_pca(data,labels,size):
 
   # plot & save
   plot_save(X_r, labels, data0, data1, "pca")
+
+
+def makeVideo(X_2d,labels):
+
+    # doesn't work atm: gives error (AttributeError: 'FigureCanvasMac' object has no attribute ....
+    name = "test1.gif"
+    fps = 1
+    duration = 60 # the number of samples in the array
+
+    print "X_2d shape", X_2d.shape
+
+    def make_frame(t):
+        fig = plt.figure()
+        print(t)
+
+        # get colours from hsl values 
+        # colour = colorsys.hls_to_rgb(360*labels[t]/10, 0.5, 0.5)
+        my_labels = np.genfromtxt('./csv_txt_tests/mnist_ys.csv', delimiter=',')
+        print "label shape", my_labels.shape
+
+        # trim the labels
+        colour = my_labels[:1000,0]
+
+        # trim the number of points
+        X_ = X_2d[t*10000:t*10000+10000,0]
+        X = X_[:1000]
+        Y_ = X_2d[t*10000:t*10000+10000,1]
+        Y = Y_[:1000]
+
+        plt.scatter(X,Y,c=colour)
+
+        return mplfig_to_npimage(fig)
+        # return fig
+
+    animation = mpy.VideoClip(make_frame, duration = duration)
+    animation.write_gif(name, fps=fps)
 
 
 def plot_save(X_2d, y, Xdim0, Xdim1, Dtype):
@@ -183,42 +226,7 @@ def read_and_video():
     print "data incoming shape", my_data.shape
 
     makeVideo(my_data, labels)
-    
-    
-def makeVideo(X_2d,labels):
 
-    # doesn't work atm: gives error (AttributeError: 'FigureCanvasMac' object has no attribute ....
-    name = "test1.gif"
-    fps = 1
-    duration = 60 # the number of samples in the array
-
-    print "X_2d shape", X_2d.shape
-
-    def make_frame(t):
-        fig = plt.figure()
-        print(t)
-
-        # get colours from hsl values 
-        # colour = colorsys.hls_to_rgb(360*labels[t]/10, 0.5, 0.5)
-        my_labels = np.genfromtxt('./csv_txt_tests/mnist_ys.csv', delimiter=',')
-        print "label shape", my_labels.shape
-
-        # trim the labels
-        colour = my_labels[:1000,0]
-
-        # trim the number of points
-        X_ = X_2d[t*10000:t*10000+10000,0]
-        X = X_[:1000]
-        Y_ = X_2d[t*10000:t*10000+10000,1]
-        Y = Y_[:1000]
-
-        plt.scatter(X,Y,c=colour)
-
-        return mplfig_to_npimage(fig)
-        # return fig
-
-    animation = mpy.VideoClip(make_frame, duration = duration)
-    animation.write_gif(name, fps=fps)
 
 
 if __name__ == "__main__":

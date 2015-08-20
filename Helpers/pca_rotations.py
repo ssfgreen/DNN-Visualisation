@@ -3,6 +3,10 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import math
 
+''' This file tests the PCA for working with Isometries and rotational data 
+
+'''
+
 def rotateArray(array, angle):
     rotation = np.array([[np.cos(angle), -1*np.sin(angle)], [np.sin(angle), np.cos(angle)]])
     rotated = np.dot(rotation, array.T)

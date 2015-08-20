@@ -3,11 +3,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import base64
 
+''' This file opens a csv file,
+    re-saves another csv to place into contiguous memory space
+    required to process into base64, then saves a base64 string to file
+ '''
+
+
 # standard importing
 my_data = np.genfromtxt('mnist_coords.csv', delimiter=',')
 my_labels = np.genfromtxt('mnist_ys.csv', delimiter=',')
 
 # getting X, y and labels - also trims the NaNs
+# TODO: should only do this if the no. dims is > 2!
 X = my_data[:1000,0]
 y = my_data[:1000,1]
 label = my_labels[:1000,0]

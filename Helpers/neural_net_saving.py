@@ -21,6 +21,11 @@ from tsne import bh_sne
 # from bn_saving import *
 import matplotlib.pyplot as plt
 
+''' this file is very important!
+    - it saves the weights, activations and parameters from the neural network
+    - also plots the tsne graphs and saves those into the required folder structure too
+'''
+
 def save_weight_bias_slow(experiment_folder, filename, epoch, output_layer, ending, out_type):
 
     print("saving weights/biases...")

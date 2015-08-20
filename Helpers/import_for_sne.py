@@ -9,7 +9,10 @@ import math
 import re
 
 # new_data = np.genfromtxt('test_csv.csv', dtype=np.float32, delimiter=',')
-
+''' Performs bulk .csv import from a foler using glob.glob and processing 
+    to process the data (useful for NN researchers who don't use python and 
+      pymongo)
+'''
 
 def find_files(extension):
   path = os.path.dirname(os.path.realpath(__file__))
@@ -92,18 +95,6 @@ def method_two_nested():
   print "shape: ", intitial.shape
 
   np.savetxt("test2.csv", intitial, delimiter=",")
-
-# The Pandas method found online
-def pandas():
-
-  path =r"C:\DRO\DCL_rawdata_files"
-  allFiles = glob.glob(path + "/*.csv")
-  frame = pd.DataFrame()
-  list = []
-  for file in allFiles:
-      df = pd.read_csv(str.join(path,file),index_col=None, header=0)
-      list.append(df)
-  frame = pd.concat(list)
 
 def save_file_names_indexed(allFiles):
   # # gets files at that path
