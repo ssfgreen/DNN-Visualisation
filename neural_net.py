@@ -1,4 +1,5 @@
 import sys
+import math
 sys.path.insert(0, './NeuralNets')
 
 from mnist_net import *
@@ -30,6 +31,26 @@ def run_neural_net():
     net1 = Net()
     # say_hello()
 
+def my_range(start, end, step):
+    while start <= end:
+        yield start
+        start += step
+
+def power_range(start, end, divisor):
+    while start <= end:
+        yield start
+        start += start/float(divisor)
+
+def run_neural_networks():
+    
+    last_value = -1;
+
+    for x in power_range(1, 510,10):
+        epoch = int(x)
+        if epoch != last_value:
+            run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',20, 600, epoch, 0.01, 0.9, False)
+            last_value = epoch
+
 if __name__ == '__main__':
 
     # ---- RUN NET - ARGS!! ----
@@ -39,5 +60,4 @@ if __name__ == '__main__':
     # run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz', 
     # 500, 600, 512, 0.01, 0.9, False)
 
-    run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz', 
-    20, 600, 1, 0.01, 0.9, False)
+    run_neural_networks()

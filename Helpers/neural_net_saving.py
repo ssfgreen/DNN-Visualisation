@@ -35,7 +35,6 @@ def save_weight_bias_slow(experiment_folder, filename, epoch, output_layer, endi
 
     subfolder = experiment_folder + "/weights-biases"
     data_directory = check_create_directory(subfolder)
-    check_create_directory(data_directory)
 
     # collecting all Tensor Shared Variables [W b W b W b] - weights and biases
     all_params = lasagne.layers.get_all_params(output_layer)
@@ -92,11 +91,9 @@ def save_activations_test(experiment_folder, filename, epoch, dataset, output_la
     print ("Saving Activations...")
     
     # check for directory, if not create it
-    #data_directory = check_create_directory("data/activations")
     
     subfolder = experiment_folder + "/activations"
     data_directory = check_create_directory(subfolder)
-    check_create_directory(data_directory)
 
     # collects all lasagne layers as Theano Variables
     th_layers = lasagne.layers.get_all_layers(output_layer)
@@ -133,7 +130,15 @@ def save_activations_test(experiment_folder, filename, epoch, dataset, output_la
 
 
 def save_params (experiment_folder, filename, output_layer, datafile, num_epochs, batch_size, num_hidden_units, learning_rate,
-    momentum, train_loss, valid_loss, valid_accuracy, output_dim, input_dim):
+    momentum, epoch, dataset):
+
+    train_loss = epoch['train_loss']
+    valid_loss = epoch['valid_loss']
+    valid_accuracy =  (epoch['valid_accuracy'] * 100)
+    epoch_num = epoch['number']
+
+    output_dim = dataset['output_dim']
+    input_dim = dataset['input_dim']
 
     print("Saving Parameters...")
 
@@ -141,7 +146,6 @@ def save_params (experiment_folder, filename, output_layer, datafile, num_epochs
 
     subfolder = experiment_folder + "/params"
     data_directory = check_create_directory(subfolder)
-    check_create_directory(data_directory)
 
     params_to_save = dict(
         NETWORK_LAYERS = [str(type(layer)) for layer in lasagne.layers.get_all_layers(output_layer)],
@@ -155,14 +159,15 @@ def save_params (experiment_folder, filename, output_layer, datafile, num_epochs
         VALID_LOSS = valid_loss,
         VALID_ACCURACY = valid_accuracy,
         OUTPUT_DIM = output_dim,
-        INPUT_DIM = input_dim
+        INPUT_DIM = input_dim,
+        EPOCH = epoch_num
         )
 
     # open('file.json', 'w') as f: f.write(json.dumps(members))
 
     # log = json.dumps(params_to_save)
     filename = "params"
-    filename = "{}/{}".format(data_directory, filename)
+    filename = "{}/{}-E{}.json".format(data_directory, filename, epoch_num)
 
     with open(filename,"w") as outfile:
         outfile.write(json.dumps(params_to_save,sort_keys=True,
@@ -175,11 +180,9 @@ def plot_activations(experiment_folder, epoch, dataset, output_layer, num):
     
     coords_subfolder = experiment_folder + "/sne_coords"
     coords_data_directory = check_create_directory(coords_subfolder)
-    check_create_directory(coords_data_directory)
 
     plot_subfolder = experiment_folder + "/sne_plots"
     plot_data_directory = check_create_directory(plot_subfolder)
-    check_create_directory(coords_data_directory)
 
     print ("Calculating Activations...")
     
@@ -261,6 +264,7 @@ def new_experiment_folder(subfolder):
   # check if that folder exists, if not create it
   check_create_directory(foldername)
 
+  print "fn: ", foldername
   return foldername
 
 
@@ -273,6 +277,7 @@ def check_create_directory(new_folder):
     if not os.path.exists(data_directory):
         os.makedirs(data_directory)
 
+    print "dd: ", data_directory
     return data_directory
 
 def new_dir_index(sub_folder):

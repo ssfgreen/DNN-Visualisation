@@ -314,10 +314,9 @@ class Net:
                 print("  validation accuracy:\t\t{:.2f} %%".format(
                     epoch['valid_accuracy'] * 100))
 
-
                 if epoch['number'] == 1:
                     save_params(experiment_folder, "testing", output_layer, self.DATA_FILENAME, self.NUM_EPOCHS, self.BATCH_SIZE, self.NUM_HIDDEN_UNITS, self.LEARNING_RATE, 
-                        self.MOMENTUM, epoch['train_loss'], epoch['valid_loss'], (epoch['valid_accuracy'] * 100), dataset['output_dim'], dataset['input_dim'])
+                        self.MOMENTUM, epoch, dataset)
 
                 # adding inc ode to save activations
 
@@ -335,8 +334,9 @@ class Net:
                 if epoch['number'] >= num_epochs:
                     # save_params(output_layer, datafile, num_epochs, batch_size, num_hidden_units, learning_rate
         # momentum, train_loss, valid_loss, valid_accuracy, output_dim, input_dim)
-                    save_params(experiment_folder,"testing", output_layer, self.DATA_FILENAME, self.NUM_EPOCHS, self.BATCH_SIZE, self.NUM_HIDDEN_UNITS, self.LEARNING_RATE, 
-                        self.MOMENTUM, epoch['train_loss'], epoch['valid_loss'], (epoch['valid_accuracy'] * 100), dataset['output_dim'], dataset['input_dim'])
+                    save_params(experiment_folder, "testing", output_layer, self.DATA_FILENAME, 
+                        self.NUM_EPOCHS, self.BATCH_SIZE, self.NUM_HIDDEN_UNITS, self.LEARNING_RATE, 
+                        self.MOMENTUM, epoch, dataset)
                     break
 
         except KeyboardInterrupt:
