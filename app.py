@@ -11,11 +11,11 @@ from neural_net import NeuralNet
 
 mongo = [{
       "id":"4353245325",
-      "url":"./data/260115175012.json",
+      "url":"./data/JSON/260115175012.json",
       "name":"Tom's experiment"
     },{
       "id":"4353245425",
-      "url":"./data/271015175012.json",
+      "url":"./data/JSON/271015175012.json",
       "name":"Sam's experiment"
     }]
 
@@ -43,7 +43,7 @@ class NeuralResource(Resource):
 
     try:
       # result = neuralNet.result(timedate)
-      result = {'data':data}
+      result = {'data': data}
     except Exception as error:
       return str(error), 500
 
@@ -107,6 +107,10 @@ def meta():
 @app.route('/layer')
 def layer():
   return app.send_static_file('views/layer.html')
+
+@app.route('/iter2')
+def iter2():
+  return app.send_static_file('views/iter2.html')
 
 
 # this is what we're running - sets up the server 

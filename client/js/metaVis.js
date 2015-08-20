@@ -119,13 +119,15 @@ metaVis.prototype.child_layout = function child_layout() {
 
   this.meta_display.size(W/300);
   this.meta_display.div
-    .style('border', '1px solid #959595')
+    // .style('border', '1px solid #959595')
+    .style('background-color', 'white')
     .pos([gutter*3,gutter*3])
     .size(dims); 
 
   this.main_display.size(W/300);
   this.main_display.div
-    .style('border', '1px solid #959595')
+    // .style('border', '1px solid #959595')
+    .style('background-color', 'white')
     .pos([box_size+gutter*4,gutter*3])
     .size(dims); 
 
