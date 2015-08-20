@@ -23,14 +23,14 @@ mongo = [{
 class NeuralResource(Resource):
 
   # in response to the get request calls this function
-  def get(self,timedate):
+  def get(self,ID):
     "Get results from a particular neural network"
-    print(timedate)
+    print(ID)
     # tries to get the result from neuralNet class in neural_net
-    # passing in the timedate ID!!
+    # passing in the ID ID!!
     url = None
     for m in mongo:
-      if(m['id'] == timedate):
+      if(m['id'] == ID):
         url = m['url']
         break
 
@@ -42,7 +42,7 @@ class NeuralResource(Resource):
         data = json.load(data_file)
 
     try:
-      # result = neuralNet.result(timedate)
+      # result = neuralNet.result(ID)
       result = {'data': data}
     except Exception as error:
       return str(error), 500
@@ -117,7 +117,7 @@ def iter2():
 if __name__ == '__main__':
 
   # Add api resources (sets up the routes for the data stuff)
-  api.add_resource(NeuralResource, '/results/<string:timedate>')
+  api.add_resource(NeuralResource, '/results/<string:ID>')
   api.add_resource(NeuralResources, '/results')
 
   #Run Server on port 0.0.0.0

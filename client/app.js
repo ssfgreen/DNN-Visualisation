@@ -22,7 +22,7 @@ function NeuralController($scope,Result,$localStorage){
 
     // the function that upon change uploads the data to the local storage
     $scope.getID = function(id){
-        $scope.result = Result.get({resultId:id});
+        $scope.result = Result.get({resultId:String(id)});
         $scope.result.$promise.then(function(){
             console.log($scope.result);
             $localStorage.result = $scope.result.data;
@@ -51,10 +51,10 @@ function NeuralController($scope,Result,$localStorage){
     $scope.runNet = function(id){
         // creates a new Result object?
         var result = new Result();
-        result
         result.name = id;
         result.$save().then(function(){
             console.log('saved');
+            $scope.results = Result.query();
         },function(error){
             console.log(error);
         })
