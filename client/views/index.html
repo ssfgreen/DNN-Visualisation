@@ -12,7 +12,8 @@
   
       <div ng-controller="NeuralController">
           <h1>Hello World</h1>
-          <!-- <div ng-repeat="result in results"><a href="" ng-click="getID(result.id)"> {{result.name}} </a></div> -->
+
+          <div ng-repeat="result in results"><a href="" ng-click="runNet(result.id)"> {{result.name}} </a></div>
           
         <form name="myForm">
             <label for="repeatSelect"> Repeat select: </label>

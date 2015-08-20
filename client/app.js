@@ -49,12 +49,22 @@ function NeuralController($scope,Result,$localStorage){
     var result = new Result();
 
     // 
-    result.name = 'hello';
-    result.$save().then(function(){
-        console.log('saved');
-    },function(error){
-        console.log(error);
-    })
+    // the function that upon change uploads the data to the local storage
+    $scope.runNet = function(id){
+        result.name = id;
+        result.$save().then(function(){
+            console.log('saved');
+        },function(error){
+            console.log(error);
+        })
+    }
+
+    // result.name = 'hello';
+    // result.$save().then(function(){
+    //     console.log('saved');
+    // },function(error){
+    //     console.log(error);
+    // })
 };
 
 
