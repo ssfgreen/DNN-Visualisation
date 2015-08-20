@@ -61,12 +61,12 @@ class NeuralResources(Resource):
     
     # then tries to run the neural net!
     try:
-      timedate = neuralNet.run(data)
+      result = neuralNet.run(data)
     except Exception as error:
       return str(error), 500
 
-    # then in response, returns the timedate ID used reference the object ??
-    return timedate
+    # then in response, returns the result ID used reference the object ??
+    return result
 
   # gets the list of neural networks from somewhere, needs to be populated from another file.
   def get(self):

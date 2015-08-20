@@ -9,7 +9,7 @@ class NeuralNet:
         print('running with {}'.format(data))
 
         # and returns this to...?
-        return {'net_out': '123'}
+        return {'ID': '1239383828'}
 
     # this is called when we do a results get request
     def result(self,timedate):
