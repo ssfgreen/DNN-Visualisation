@@ -3,6 +3,10 @@ from pprint import pprint
 import os
 import glob
 import sys
+sys.path.insert(0, './Helpers')
+sys.path.insert(0, './NeuralNets')
+
+from bn_saving import *
 
 def getIdFromFile():
   # gets files at that path
@@ -41,3 +45,6 @@ if __name__ == '__main__':
   print "------- DATA --------"
   data = getJSONdata('271015175012.json')
   pprint(data)
+
+  # from bn-sne
+  read_and_video()
