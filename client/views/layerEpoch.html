@@ -1,0 +1,48 @@
+<html>
+
+    <head>
+        <title>Neural Net</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.6/ngStorage.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-resource.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.js"></script>
+
+        <link rel="stylesheet" href="css/base.css">
+    </head>
+
+    <body ng-app="NeuralNet">
+
+        <!-- this contains the image data for the MNIST dataset -->
+        <script type="text/javascript" src="js/MNIST.js"></script>
+
+        <div ng-controller="VisController">
+            <h1>Hello World</h1>
+            <!-- <div>{{coords}}</div> -->
+            <div id="layer_vis"></div>
+        </div>
+
+        <a href="/">HOME</a>
+        <a href="/meta">META</a>
+        <a href="/layerEpoch">LAYER</a>
+        <a href="/iter2">IT2</a>
+
+        
+        <script type="text/javascript">
+
+            var str = localStorage.getItem("ngStorage-result");
+            var coords = JSON.parse(str);
+            console.log("data!!!: ", coords);
+
+            var ID = coords.PARAMS.ID;
+            var PARAMS = coords.PARAMS;
+            var DATA = coords.DATA;
+            var sensible_number_of_points = 500;
+
+        </script>
+        <script type="text/javascript" src="js/BasicVis.js"></script>
+        <script type="text/javascript" src="js/layerEpochVis.js"></script>
+        <script type="text/javascript" src="app.js"></script>
+    </body>
+
+</html>

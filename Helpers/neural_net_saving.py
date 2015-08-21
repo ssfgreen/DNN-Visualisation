@@ -9,12 +9,16 @@ import theano
 import theano.tensor as T
 import time
 import csv
-
+import datetime
+from pymongo import MongoClient, ReturnDocument
+from bson.objectid import ObjectId
+import base64
 
 # Imports
 from IDAPICourseworkLibrary import *
 import h5py
 import json
+from pymongo_store import *
 
 # inmport tsne plotting and created bn_saving tools
 from tsne import bh_sne
@@ -129,7 +133,7 @@ def save_activations_test(experiment_folder, filename, epoch, dataset, output_la
     print("Activations saved!")
 
 
-def save_params (experiment_folder, filename, output_layer, datafile, num_epochs, batch_size, num_hidden_units, learning_rate,
+def save_params (exID, experiment_folder, filename, output_layer, datafile, num_epochs, batch_size, num_hidden_units, learning_rate,
     momentum, epoch, dataset):
 
     train_loss = epoch['train_loss']
@@ -139,6 +143,9 @@ def save_params (experiment_folder, filename, output_layer, datafile, num_epochs
 
     output_dim = dataset['output_dim']
     input_dim = dataset['input_dim']
+    X_val = dataset['valid_set']
+
+    print "X_val shape: ", X_val.shape
 
     print("Saving Parameters...")
 
@@ -148,7 +155,7 @@ def save_params (experiment_folder, filename, output_layer, datafile, num_epochs
     data_directory = check_create_directory(subfolder)
 
     params_to_save = dict(
-        NETWORK_LAYERS = [str(type(layer)) for layer in lasagne.layers.get_all_layers(output_layer)],
+        # NETWORK_LAYERS = [str(type(layer)) for layer in lasagne.layers.get_all_layers(output_layer)],
         DATA_FILENAME = datafile,
         NUM_EPOCHS = num_epochs,
         BATCH_SIZE = batch_size,
@@ -169,6 +176,30 @@ def save_params (experiment_folder, filename, output_layer, datafile, num_epochs
     filename = "params"
     filename = "{}/{}-E{}.json".format(data_directory, filename, epoch_num)
 
+    # mongo stuff
+    dbClient = DatabaseClient()
+
+    filteredResults = dbClient.query(exID)
+
+    name = "{}, Accuracy: {}".format(experiment_folder, valid_accuracy)
+
+    if (filteredResults == []):
+      experiment = {
+        "TDID": exID,
+        "HUMAN_NAME": name,
+        "PARAMS": params_to_save,
+        "DATA": {}
+      }
+      dbClient.insert(experiment)
+    else:
+      resultId = filteredResults[0]['_id']
+      experiment = dbClient.get(resultId)
+      experiment["PARAMS"] = params_to_save
+
+      updatedObject = dbClient.update(resultId, experiment)
+      print "updated: ", updatedObject
+
+    # folder saving stuff
     with open(filename,"w") as outfile:
         outfile.write(json.dumps(params_to_save,sort_keys=True,
              indent=4, separators=(',', ': ')))
@@ -176,10 +207,12 @@ def save_params (experiment_folder, filename, output_layer, datafile, num_epochs
     print("Parameters Saved!")
 
 
-def plot_activations(experiment_folder, epoch, dataset, output_layer, num):
+def plot_activations(exID, exNUM, experiment_folder, epoch, dataset, output_layer, num):
     
-    coords_subfolder = experiment_folder + "/sne_coords"
-    coords_data_directory = check_create_directory(coords_subfolder)
+    # coords_data_directory = check_create_directory("/sne_coords")
+
+    # coords_subfolder = experiment_folder + "/sne_coords"
+    # coords_data_directory = check_create_directory(coords_subfolder)
 
     plot_subfolder = experiment_folder + "/sne_plots"
     plot_data_directory = check_create_directory(plot_subfolder)
@@ -207,19 +240,85 @@ def plot_activations(experiment_folder, epoch, dataset, output_layer, num):
         # converts activations to x,y coords
         coords, labels = plot_bn_sne(data, y, num)
 
+        # putting into list for saving to mongo
+        coords_array = np.reshape(coords, (1,-1))
+        coords_list = coords_array.tolist()[0]
+        labels_array = np.reshape(labels, (1,-1))
+        labels_list = labels_array.tolist()[0]
+
+        print "coords list", coords_list
+        # mongo stuff
+        dbClient = DatabaseClient()
+
+        filteredResults = dbClient.query(exID)
+
+        if (filteredResults == []):
+          experiment = {
+            "TDID": exID,
+            "DATA": {
+              "LAYER": [i], 
+              "EPOCH": [epoch['number']],
+              "TSNE_DATA": [
+                coords_list
+              ],
+              "TSNE_LABELS": labels_list
+            }
+          }
+          dbClient.insert(experiment)
+        else:
+          resultId = filteredResults[0]['_id']
+          experiment = dbClient.get(resultId)
+
+          if "TSNE_DATA" in experiment["DATA"]:
+            existing_coords = experiment["DATA"]["TSNE_DATA"]
+            print "some lists"
+            existing_coords.append(coords_list)
+          else:
+            print "no lists"
+            existing_coords = [coords_list]
+      
+          if "TSNE_LABELS" in experiment["DATA"]:
+            existing_labels = experiment["DATA"]["TSNE_LABELS"]
+          else:
+            existing_labels = labels_list
+
+          if "EPOCH" in experiment["DATA"]:
+            existing_epochs = experiment["DATA"]["EPOCH"]
+            existing_epochs.append(epoch['number'])
+          else:
+            existing_epochs = [epoch['number']]
+
+          if "LAYER" in experiment["DATA"]:
+            existing_layer = experiment["DATA"]["LAYER"]
+            existing_layer.append(i)
+          else:
+            existing_layer = [i]
+
+          experiment["DATA"]["LAYER"] = existing_layer
+          experiment["DATA"]["EPOCH"] = existing_epochs
+          experiment["DATA"]["TSNE_DATA"] = existing_coords
+          experiment["DATA"]["TSNE_LABELS"] = existing_labels
+
+          updatedObject = dbClient.update(resultId, experiment)
+          print "updated: ", updatedObject
+
         # generate appropriate file names
-        coords_filename_unique = "{}/{}-E{}-L{}.csv".format(coords_data_directory, "coords", epoch['number'], i)
-        labels_filename_unique = "{}/{}-E{}-L{}.csv".format(coords_data_directory, "labels", epoch['number'], i)
+        # coords_filename_unique = "{}/C-{}-EX{}-E{}-L{}.csv".format(coords_data_directory, exID, exNUM, epoch['number'], i)
+        # labels_filename_unique = "{}/L-{}.csv".format(coords_data_directory, exID)
         plot_filename_unique = "{}/{}-E{}-L{}".format(plot_data_directory, "sne_plot", epoch['number'], i)
         
         # save stuff
-        numpy.savetxt(coords_filename_unique, coords, delimiter=",")
-        numpy.savetxt(labels_filename_unique, labels, delimiter=",")
+        # numpy.savetxt(coords_filename_unique, coords, delimiter=",")
+        # numpy.savetxt(labels_filename_unique, labels, delimiter=",")
 
         # plot and save
         plt.scatter(coords[:, 0], coords[:, 1], c=labels)
         plt.savefig(plot_filename_unique, dpi=120)
         plt.close()
+
+
+
+
 
 
 ##### HELPER FUNCTIONS #####
@@ -245,6 +344,12 @@ def plot_bn_sne(data, labels, size):
   # plot & save
   plot_save(filename, X_2d, labels, data0, data1)
 
+def time_date_id():
+  date_today = time.strftime('%d%m%Y')
+  time_now = time.strftime('%H%M%S')
+
+  return "{}{}".format(date_today, time_now)
+
 def new_experiment_folder(subfolder):
 
   # append date to subfolder
@@ -265,7 +370,7 @@ def new_experiment_folder(subfolder):
   check_create_directory(foldername)
 
   print "fn: ", foldername
-  return foldername
+  return foldername, num
 
 
 def check_create_directory(new_folder):
@@ -326,3 +431,8 @@ def unused_suff():
 
   # create the filename
   filename = 'images/{}/bh_sne-0x{}-1x{}-t{}.png'.format(date_today, Xdim0, Xdim1, time_now)
+
+
+if __name__ == '__main__':
+
+  print time_date_id()

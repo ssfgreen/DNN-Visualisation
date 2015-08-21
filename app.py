@@ -1,5 +1,9 @@
 #library imports
 import os
+import sys
+sys.path.insert(0, './Helpers')
+
+from pymongo_store import*
 
 #Flask imports
 from flask import Flask, request
@@ -23,31 +27,37 @@ mongo = [{
 class NeuralResource(Resource):
 
   # in response to the get request calls this function
-  def get(self,ID):
+  def get(self,_id):
     "Get results from a particular neural network"
-    print(ID)
+    print(_id)
+
+    dbClient = DatabaseClient()
+
+    experimentOBJ = dbClient.get(_id)
+    print experimentOBJ
+
     # tries to get the result from neuralNet class in neural_net
     # passing in the ID ID!!
-    url = None
-    for m in mongo:
-      if(m['id'] == ID):
-        url = m['url']
-        break
+    # url = None
+    # for m in mongo:
+    #   if(m['id'] == ID):
+    #     url = m['url']
+    #     break
 
-    if url == None:
-      return {'data':'FAIL'}
+    # if url == None:
+    #   return {'data':'FAIL'}
 
-    data = None
-    with open(url) as data_file:    
-        data = json.load(data_file)
+    # data = None
+    # with open(url) as data_file:    
+    #     data = json.load(data_file)
 
-    try:
-      # result = neuralNet.result(ID)
-      result = {'data': data}
-    except Exception as error:
-      return str(error), 500
+    # try:
+    #   # result = neuralNet.result(ID)
+    #   result = {'data': data}
+    # except Exception as error:
+    #   return str(error), 500
 
-    return result
+    return {'data': experimentOBJ}
 
 # this is for a multiple instance get
 class NeuralResources(Resource):
@@ -72,8 +82,23 @@ class NeuralResources(Resource):
   def get(self):
     "Return a list of neural networks"
 
+    dbClient = DatabaseClient()
+
+    results = dbClient.query()
+    print results
+
+    response = []
+
+    for result in results:
+      resultId = result['_id']
+      resultHN = result['HUMAN_NAME']
+      response.append({
+          "id": resultId,
+          "name": resultHN
+        })
+
     # return ['one','two']
-    return mongo
+    return response
 
 # creates an instance of the Neural Net class?
 neuralNet = NeuralNet()
@@ -96,17 +121,13 @@ def index():
   print(os.getcwd(),staticPath)
   return app.send_static_file('views/index.html')
 
-@app.route('/epoch')
-def epoch():
-  return app.send_static_file('views/epoch.html')
-
 @app.route('/meta')
 def meta():
   return app.send_static_file('views/meta.html')
 
-@app.route('/layer')
+@app.route('/layerEpoch')
 def layer():
-  return app.send_static_file('views/layer.html')
+  return app.send_static_file('views/layerEpoch.html')
 
 @app.route('/iter2')
 def iter2():
@@ -117,7 +138,7 @@ def iter2():
 if __name__ == '__main__':
 
   # Add api resources (sets up the routes for the data stuff)
-  api.add_resource(NeuralResource, '/results/<string:ID>')
+  api.add_resource(NeuralResource, '/results/<string:_id>')
   api.add_resource(NeuralResources, '/results')
 
   #Run Server on port 0.0.0.0

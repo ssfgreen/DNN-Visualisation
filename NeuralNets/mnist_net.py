@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-
-"""Example which shows with the MNIST dataset how Lasagne can be used."""
-
 from __future__ import print_function
 
 # as lasagne is pre-release, some warnings pop up: now ignoring these!
@@ -29,7 +25,7 @@ import h5py
 # from pickle_io import write_model_data
 from bn_saving import *
 from neural_net_saving import *
-from IDAPICourseworkLibrary import *
+from meta_sne_functions import *
 
 # inmport tsne plotting and created bn_saving tools
 from tsne import bh_sne
@@ -103,6 +99,7 @@ class Net:
             y_train=T.cast(theano.shared(y_train), 'int32'),
             X_valid=theano.shared(lasagne.utils.floatX(X_valid)),
             y_valid=T.cast(theano.shared(y_valid), 'int32'),
+            valid_set = X_valid,
             y_valid_raw = y_valid,
             X_test=theano.shared(lasagne.utils.floatX(X_test)),
             y_test=T.cast(theano.shared(y_test), 'int32'),
@@ -301,7 +298,8 @@ class Net:
         print("Starting training...")
 
         # creating an experiment folder for file structure
-        experiment_folder = new_experiment_folder("experiments")
+        experiment_folder, experiment_num = new_experiment_folder("experiments")
+        exID = time_date_id()
 
         now = time.time()
         try:
@@ -315,7 +313,7 @@ class Net:
                     epoch['valid_accuracy'] * 100))
 
                 if epoch['number'] == 1:
-                    save_params(experiment_folder, "testing", output_layer, self.DATA_FILENAME, self.NUM_EPOCHS, self.BATCH_SIZE, self.NUM_HIDDEN_UNITS, self.LEARNING_RATE, 
+                    save_params(exID, experiment_folder, "testing", output_layer, self.DATA_FILENAME, self.NUM_EPOCHS, self.BATCH_SIZE, self.NUM_HIDDEN_UNITS, self.LEARNING_RATE, 
                         self.MOMENTUM, epoch, dataset)
 
                 # adding inc ode to save activations
@@ -326,7 +324,7 @@ class Net:
                 if epoch['number'] % 2 == 0:
                 # if epoch['number'] == 1:
                     num_coords = 500
-                    plot_activations(experiment_folder, epoch, dataset, output_layer, num_coords)
+                    plot_activations(exID, experiment_num, experiment_folder, epoch, dataset, output_layer, num_coords)
                 if epoch['number'] % 10 == 0:
                     save_activations_test(experiment_folder, "testing", epoch, dataset, output_layer, "csv", "NUMPY")
                     save_weight_bias_slow(experiment_folder, "testing", epoch, output_layer, "csv", "NUMPY")
@@ -334,9 +332,13 @@ class Net:
                 if epoch['number'] >= num_epochs:
                     # save_params(output_layer, datafile, num_epochs, batch_size, num_hidden_units, learning_rate
         # momentum, train_loss, valid_loss, valid_accuracy, output_dim, input_dim)
-                    save_params(experiment_folder, "testing", output_layer, self.DATA_FILENAME, 
+                    save_params(exID, experiment_folder, "testing", output_layer, self.DATA_FILENAME, 
                         self.NUM_EPOCHS, self.BATCH_SIZE, self.NUM_HIDDEN_UNITS, self.LEARNING_RATE, 
                         self.MOMENTUM, epoch, dataset)
+
+                    # after the experiment has concluded, run the meta and pca graph plotting
+                    meta_pca_sne(exID)
+                    tsne_pca(exID)
                     break
 
         except KeyboardInterrupt:
