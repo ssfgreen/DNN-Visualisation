@@ -1,13 +1,13 @@
 
 //----> The Visualisation Plot
 
-var layerEpochVis = function layerVis(s) {
+var pcaVis = function pcaVis(s) {
 
   // initialise as a container with children
   BasicVis.Container.call(this, s);
 
   // appends a div to use later to print the info about the net (params etc)
-  this.info_layer = this.inner.append("div");
+  this.info_meta = this.inner.append("div");
   this.info_vis = this.inner.append("div");
 
   // set tooltips function
@@ -31,21 +31,21 @@ var layerEpochVis = function layerVis(s) {
     };
   }
 
-  this.layer_display = this.new_child(BasicVis.ScatterPlot)
-    .N(DATA.LAYER.length)
-    .xrange.fit(DATA.LAYER)
-    .yrange.fit(DATA.EPOCH)
-    .x(function(i) {return DATA.LAYER[i];})
-    .y(function(i) {return DATA.EPOCH[i];})
+  this.meta_display = this.new_child(BasicVis.ScatterPlot)
+    .N(DATA.PCA.length/2)
+    .xrange.fit(DATA.PCA)
+    .yrange.fit(DATA.PCA)
+    .x(function(i) {return DATA.PCA[2*i  ];})
+    .y(function(i) {return DATA.PCA[2*i+1];})
     .color(function(i) {
       // set according to the label
-      var hue = 180*DATA.LAYER[i]/10.0;
-      var saturation = 0.5;
+      var hue = 180*DATA.EPOCH[i]/10.0;
+      var saturation = DATA.LAYER[i]/10.0;
       var lightness = 0.5;
       return d3.hsl(hue, saturation, lightness);
     });
 
-  this.layer_display
+  this.meta_display
     .enable_zoom()
     .bindToWindowResize()
 
@@ -83,70 +83,68 @@ var layerEpochVis = function layerVis(s) {
     .enable_zoom()
     .bindToWindowResize()
 
-    tooltips("img", main_display, labels);
+    tooltips("text", main_display, labels);
   }
 
   // javascript scoping, to ensure it is THIS function
   // not the this of the 'circle' i.e
   var this_ = this;
 
-  this.layer_display.mouseover( function(i) {
+  this.meta_display.mouseover( function(i) {
 
-    this_.info_layer.html("<center> Layer: " + DATA.LAYER[i] + " Epoch: " + DATA.EPOCH[i]
-      + "</center");
+    this_.info_meta.html("<center> Layer: " + DATA.LAYER[i] + " Epoch: " + DATA.EPOCH[i]
+        + " TO ADD MORE! </center");
     
     this_.main_display.show(i);
   });
+
 }
 
-layerEpochVis.prototype = Object.create(BasicVis.Container.prototype);
+pcaVis.prototype = Object.create(BasicVis.Container.prototype);
 
-layerEpochVis.prototype.child_layout = function child_layout() {
+pcaVis.prototype.child_layout = function child_layout() {
 
   // gets the width of the main representation div 
   W = parseInt(this.s.style('width'));
 
-  var gutter = W/16;
-  var main = W - gutter*6;
-  var main_box_size = (main/3) * 2;
-  var nav_box_size = main/3;
-  var dims = [main_box_size, main_box_size];
-  var dims_nav = [nav_box_size, nav_box_size];
+  var gutter = W/20;
+  var main = W - gutter*7;
+  var box_size = main/2;
+  var dims = [box_size, box_size];
   var H = W/2;
 
   this.inner
     .style('width', W)
     .style('height', H); 
 
-  this.layer_display.size(W/300);
-  this.layer_display.div
-    .style('border', '1px solid #959595')
+  this.meta_display.size(W/300);
+  this.meta_display.div
+    // .style('border', '1px solid #959595')
     .style('background-color', 'white')
-    .pos([gutter*2,H/3])
-    .size(dims_nav); 
-
-  this.main_display.size(W/400);
-  this.main_display.div
-    .style('border', '1px solid #959595')
-    .style('background-color', 'white')
-    .pos([nav_box_size+gutter*4,gutter])
+    .pos([gutter*3,gutter*3])
     .size(dims); 
 
-  this.info_layer
+  this.main_display.size(W/500);
+  this.main_display.div
+    // .style('border', '1px solid #959595')
+    .style('background-color', 'white')
+    .pos([box_size+gutter*4,gutter*3])
+    .size(dims); 
+
+  this.info_meta
     .style('position', 'absolute')
     .style('font-size', '17px')
-    .style('width', W)
+    .style('width', box_size)
     .style('height', box_size/3)
-    // .style('left', gutter*3)
-    .style('top', gutter);
-    // .style('text-align', center);
+    .style('left', gutter*3)
+    .style('top', gutter*4+box_size);
 
   return this;
 }
 
-function layer_vis_space() {
-  var layer_visd = new layerEpochVis("#layer_vis");
-  return layer_visd;
+function pca_vis_space() {
+  var pca_visd = new pcaVis("#pca_vis");
+  return pca_visd;
 }
 
-layer_vis_space();
+pca_vis_space();

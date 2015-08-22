@@ -8,22 +8,34 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.js"></script>
 
+        <script type="text/javascript" src="/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+        
+        <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/base.css">
     </head>
 
     <body ng-app="NeuralNet">
+        <div class="row">
+          <div class="col-md-10 col-md-offset-1">
 
         <!-- this contains the image data for the MNIST dataset -->
         <script type="text/javascript" src="js/MNIST.js"></script>
 
         <div ng-controller="VisController">
-            <h1>Hello World</h1>
-            <!-- <div>{{coords}}</div> -->
+            <div>
+                <h2 class="section-heading">Epoch and Layer</h1>
+                <h3 class="section-subheading text-muted">The x-axis is layer, the y-axis is epoch</h3>
+                <div>{{human_name}}</div>
+                <div>{{epochs}}</div>
+                <div>{{hiddens}}</div>
+            </div>
             <div id="layer_vis"></div>
         </div>
 
         <a href="/">HOME</a>
         <a href="/meta">META</a>
+        <a href="/pca">PCA</a>
         <a href="/layerEpoch">LAYER</a>
         <a href="/iter2">IT2</a>
 
@@ -43,6 +55,9 @@
         <script type="text/javascript" src="js/BasicVis.js"></script>
         <script type="text/javascript" src="js/layerEpochVis.js"></script>
         <script type="text/javascript" src="app.js"></script>
+
+        </div>
+        </div>
     </body>
 
 </html>

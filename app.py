@@ -34,7 +34,7 @@ class NeuralResource(Resource):
     dbClient = DatabaseClient()
 
     experimentOBJ = dbClient.get(_id)
-    print experimentOBJ
+    # print experimentOBJ
 
     # tries to get the result from neuralNet class in neural_net
     # passing in the ID ID!!
@@ -71,12 +71,14 @@ class NeuralResources(Resource):
     
     # then tries to run the neural net!
     try:
-      result = neuralNet.run(data)
+      print "DATA RESPONSE: "
+      # result = neuralNet.run(data)
     except Exception as error:
       return str(error), 500
 
     # then in response, returns the result ID used reference the object ??
-    return result
+    # return result
+    return {"data": data}
 
   # gets the list of neural networks from somewhere, needs to be populated from another file.
   def get(self):
@@ -85,7 +87,7 @@ class NeuralResources(Resource):
     dbClient = DatabaseClient()
 
     results = dbClient.query()
-    print results
+    # print results
 
     response = []
 
@@ -124,6 +126,10 @@ def index():
 @app.route('/meta')
 def meta():
   return app.send_static_file('views/meta.html')
+
+@app.route('/pca')
+def pca():
+  return app.send_static_file('views/pca.html')
 
 @app.route('/layerEpoch')
 def layer():

@@ -45,11 +45,11 @@ def run_neural_networks():
     
     last_value = -1;
 
-    for x in power_range(1, 510,2):
+    for x in power_range(1, 510, 2):
         epoch = int(x)
         if epoch != last_value:
             print epoch
-            run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',3, 600, epoch, 0.01, 0.9, False)
+            run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',30, 600, epoch, 0.01, 0.9, False)
             run_meta_vis()
             last_value = epoch
 
@@ -66,4 +66,5 @@ if __name__ == '__main__':
     # run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz', 
     # 500, 600, 512, 0.01, 0.9, False)
 
-    run_neural_networks()
+    # run_neural_networks()
+    run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',40, 600, 512, 0.01, 0.9, False)

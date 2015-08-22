@@ -19,9 +19,16 @@ from IDAPICourseworkLibrary import *
 import h5py
 import json
 from pymongo_store import *
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
 
 # inmport tsne plotting and created bn_saving tools
 from tsne import bh_sne
+
+# used for the pca and orthogonal stuff
+from numpy import eye, asarray, dot, sum, diag
+from numpy.linalg import svd
+
 # from bn_saving import *
 import matplotlib.pyplot as plt
 
@@ -49,8 +56,8 @@ def save_weight_bias_slow(experiment_folder, filename, epoch, output_layer, endi
 
     # checking sizes
     no_arrays = len(all_params)
-    print ("all params: ", all_params)
-    print ("no arrays: ", no_arrays)
+    # print ("all params: ", all_params)
+    # print ("no arrays: ", no_arrays)
 
     # initialise layer number
     layer = 0
@@ -197,7 +204,7 @@ def save_params (exID, experiment_folder, filename, output_layer, datafile, num_
       experiment["PARAMS"] = params_to_save
 
       updatedObject = dbClient.update(resultId, experiment)
-      print "updated: ", updatedObject
+      # print "updated: ", updatedObject
 
     # folder saving stuff
     with open(filename,"w") as outfile:
@@ -237,6 +244,9 @@ def plot_activations(exID, exNUM, experiment_folder, epoch, dataset, output_laye
         # gets the activations
         data = lasagne.layers.get_output(layer, X_val, deterministic=True).eval()
 
+
+        print 'data shape from layer', data.shape
+
         # converts activations to x,y coords
         coords, labels = plot_bn_sne(data, y, num)
 
@@ -246,7 +256,7 @@ def plot_activations(exID, exNUM, experiment_folder, epoch, dataset, output_laye
         labels_array = np.reshape(labels, (1,-1))
         labels_list = labels_array.tolist()[0]
 
-        print "coords list", coords_list
+        # print "coords list", coords_list
         # mongo stuff
         dbClient = DatabaseClient()
 
@@ -300,7 +310,7 @@ def plot_activations(exID, exNUM, experiment_folder, epoch, dataset, output_laye
           experiment["DATA"]["TSNE_LABELS"] = existing_labels
 
           updatedObject = dbClient.update(resultId, experiment)
-          print "updated: ", updatedObject
+          # print "updated: ", updatedObject
 
         # generate appropriate file names
         # coords_filename_unique = "{}/C-{}-EX{}-E{}-L{}.csv".format(coords_data_directory, exID, exNUM, epoch['number'], i)
@@ -316,8 +326,139 @@ def plot_activations(exID, exNUM, experiment_folder, epoch, dataset, output_laye
         plt.savefig(plot_filename_unique, dpi=120)
         plt.close()
 
+def meta_pca_sne(exID, experiment_folder): # put exID back
+    
+    plot_subfolder = experiment_folder + "/meta_pca"
+    plot_data_directory = check_create_directory(plot_subfolder)
+    filename = "{}/META".format(plot_data_directory)
 
+    # mongo stuff
+    dbClient = DatabaseClient()
 
+    filteredResults = dbClient.query(exID)
+
+    if filteredResults is None:
+      print "No results"
+      return
+
+    filteredId = filteredResults[0]['_id']
+    experiment = dbClient.get(filteredId)
+
+    list_of_coords = experiment['DATA']['TSNE_DATA']
+
+    np_list = np.asarray(list_of_coords)
+    print "META shape: ", np_list.shape
+    
+    epochs = experiment['DATA']['EPOCH']
+    layers = experiment['DATA']['LAYER']
+
+    labels = []
+    no_samples = len(epochs)
+    for i in range(no_samples):
+      labels.append(epochs[i] + (layers[i]*0.1))
+      # labels.append(epochs[i])
+    
+    labels  = np.asarray(labels)
+    labels = labels[:500]
+
+    np_list = np_list[:,:500]
+
+    # print "LIST", np_list
+    # print "list size:", np_list.shape
+
+    print "META BH", np_list.shape
+    sne_co = bh_sne(np_list, perplexity=9.0, theta=0.5)
+
+    print "sne", sne_co.shape
+    print "labels", labels
+
+    plt.scatter(sne_co[:,0], sne_co[:,1], c=labels)
+    plt.savefig(filename, dpi=120)
+    plt.close()
+    # plt.show()
+
+    print "show"
+    flat_coords = np.reshape(sne_co, (1,-1))
+    flat_coords = flat_coords.tolist()[0]
+
+    experiment['DATA']['META'] = flat_coords
+
+    updatedObject = dbClient.update(filteredId, experiment)
+    # print "updated: ", updatedObject
+
+def tsne_pca(exID, experiment_folder):
+
+    plot_subfolder = experiment_folder + "/meta_pca"
+    plot_data_directory = check_create_directory(plot_subfolder)
+    filename = "{}/PCA".format(plot_data_directory)
+    # mongo stuff
+    dbClient = DatabaseClient()
+
+    filteredResults = dbClient.query(exID)
+
+    if filteredResults is None:
+      print "No results"
+      return
+
+    filteredId = filteredResults[0]['_id']
+    experiment = dbClient.get(filteredId)
+
+    list_of_coords = experiment['DATA']['TSNE_DATA']
+
+    pca_list = []
+    for coords in list_of_coords:
+        np_val = np.asarray(coords)
+        coords_array = np.reshape(coords, (-1,2))
+
+        cast = castPCA2(coords_array)
+        print "cast: ", cast.shape
+
+        cast_veri = varimax(cast)
+        print "cast_veri", cast_veri.shape
+        cast_veri = np.reshape(cast_veri, (1,-1))
+        print "veri ", cast_veri.shape
+        pca_list.append(cast_veri)
+
+    np_pca = np.asarray(pca_list)
+
+    # getting labels
+    epochs = experiment['DATA']['EPOCH']
+    layers = experiment['DATA']['LAYER']
+
+    labels = []
+    no_samples = len(epochs)
+    print "LENGTH", no_samples
+    for i in range(no_samples):
+      labels.append(epochs[i] + (layers[i]*0.1)) # a function of epoch and layer
+      # labels.append(epochs[i])
+
+    labels  = np.asarray(labels)
+    labels = labels[:500]
+    np_pca = np_pca[:,:500]
+
+    # print "pca: ", np_pca.shape
+    np_pca = np.reshape(np_pca, (no_samples,-1))
+    print "pca: ", np_pca.shape
+
+    print "SNEPCA BH"
+    sne_pca = bh_sne(np_pca, perplexity=9.0, theta=0.5)
+
+    # clear previous plot figure
+    plt.clf()
+    plt.cla()
+    plt.scatter(sne_pca[:,0], sne_pca[:,1], c=labels)
+    plt.savefig(filename, dpi=120)
+    plt.close()
+    # plt.show()
+
+    print "post pca", sne_pca.shape
+    flat_coords = np.reshape(sne_pca, (1,-1))
+    flat_coords = flat_coords.tolist()[0]
+
+    experiment['DATA']['PCA'] = flat_coords
+
+    updatedObject = dbClient.update(filteredId, experiment)
+    # print "updated: ", updatedObject
 
 
 
@@ -336,8 +477,10 @@ def plot_bn_sne(data, labels, size):
   data0 = data.shape[0]
   data1 = data.shape[1]
 
+  print "DATA SHAPE", data.shape
+  print "DATA", data
   # dimensionality reduction with bn_sne
-  X_2d = bh_sne(data)
+  X_2d = bh_sne(data,perplexity=30.0, theta=0.5)
   print "plot shape: ", X_2d.shape
 
   return X_2d, labels
@@ -369,7 +512,7 @@ def new_experiment_folder(subfolder):
   # check if that folder exists, if not create it
   check_create_directory(foldername)
 
-  print "fn: ", foldername
+  # print "fn: ", foldername
   return foldername, num
 
 
@@ -382,7 +525,7 @@ def check_create_directory(new_folder):
     if not os.path.exists(data_directory):
         os.makedirs(data_directory)
 
-    print "dd: ", data_directory
+    # print "dd: ", data_directory
     return data_directory
 
 def new_dir_index(sub_folder):
@@ -415,22 +558,28 @@ def new_dir_index(sub_folder):
   # otherwise 
   return 1
 
-def unused_suff():
+def castPCA2(array):
+    pca = PCA(n_components = array.shape[1])
+    transform = pca.fit_transform(array)
+    return transform
 
-  # finds the current directory path
-  path = os.path.dirname(os.path.realpath(__file__))
+def castTSNE(array):
+    tsne = TSNE(n_components = array.shape[1])
+    transform = tsne.fit_transform(array)
+    return transform
 
-  # gets todays date and time
-  date_today = time.strftime('%d-%b-%Y')
-  time_now = time.strftime('%H-%M-%S')
-
-  # creates a file directory, checks if it exists, if not creates one
-  data_directory = "{}/images/{}".format(path, date_today)
-  if not os.path.exists(data_directory):
-      os.makedirs(data_directory)
-
-  # create the filename
-  filename = 'images/{}/bh_sne-0x{}-1x{}-t{}.png'.format(date_today, Xdim0, Xdim1, time_now)
+def varimax(Phi, gamma = 1, q = 20, tol = 1e-6):
+    p,k = Phi.shape
+    R = eye(k)
+    d=0
+    for i in xrange(q):
+        d_old = d
+        Lambda = dot(Phi, R)
+        u,s,vh = svd(dot(Phi.T,asarray(Lambda)**3 - (gamma/p) * dot(Lambda, diag(diag(dot(Lambda.T,Lambda))))))
+        R = dot(u,vh)
+        d = sum(s)
+        if d/d_old < tol: break
+    return dot(Phi, R)
 
 
 if __name__ == '__main__':

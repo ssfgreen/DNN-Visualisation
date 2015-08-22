@@ -24,13 +24,17 @@ function NeuralController($scope,Result,$localStorage){
     $scope.getID = function(id){
         $scope.result = Result.get({resultId:String(id)});
         $scope.result.$promise.then(function(){
-            console.log($scope.result);
+            console.log("entered getID");
+            console.log("scope-results", $scope.result);
+            console.log("data", $scope.result.data);
+
             $localStorage.result = $scope.result.data;
         });
     }
 
     // watches for the result_id to change in the angular list
     $scope.$watch('result_id',function(new_id){
+        console.log("entered Watch")
         $scope.getID(new_id);
     });
 
@@ -39,7 +43,7 @@ function NeuralController($scope,Result,$localStorage){
 
     // returns a results promise? callback? when waiting for server to respond
     $scope.results.$promise.then(function(){
-            console.log('loaded');
+            console.log('entered Query Results');
             console.log($scope.results);
         },function(error){
             console.log(error);
@@ -52,6 +56,7 @@ function NeuralController($scope,Result,$localStorage){
         // creates a new Result object?
         var result = new Result();
         result.name = id;
+        console.log("entered runNet", result.name)
         result.$save().then(function(){
             console.log('saved');
             $scope.results = Result.query();
@@ -76,5 +81,11 @@ function VisController($scope,Result,$localStorage){
     $scope.coords = $localStorage.result.DATA.COORDS;
 
     $scope.tsne = $localStorage.result.DATA.TSNE_DATA;
+
+    $scope.epochs = $localStorage.result.PARAMS.NUM_EPOCHS;
+
+    $scope.hiddens = $localStorage.result.PARAMS.NUM_HIDDEN_UNITS;
+
+    $scope.human_name = $localStorage.result.HUMAN_NAME;    
 
 }

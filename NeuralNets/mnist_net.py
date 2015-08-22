@@ -25,7 +25,7 @@ import h5py
 # from pickle_io import write_model_data
 from bn_saving import *
 from neural_net_saving import *
-from meta_sne_functions import *
+# from meta_sne_functions import *
 
 # inmport tsne plotting and created bn_saving tools
 from tsne import bh_sne
@@ -337,8 +337,8 @@ class Net:
                         self.MOMENTUM, epoch, dataset)
 
                     # after the experiment has concluded, run the meta and pca graph plotting
-                    meta_pca_sne(exID)
-                    tsne_pca(exID)
+                    meta_pca_sne(exID,experiment_folder)
+                    tsne_pca(exID,experiment_folder)
                     break
 
         except KeyboardInterrupt:

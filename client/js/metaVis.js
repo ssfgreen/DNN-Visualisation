@@ -32,11 +32,11 @@ var metaVis = function metaVis(s) {
   }
 
   this.meta_display = this.new_child(BasicVis.ScatterPlot)
-    .N(DATA.COORDS.length/2)
-    .xrange.fit(DATA.COORDS)
-    .yrange.fit(DATA.COORDS)
-    .x(function(i) {return DATA.COORDS[2*i  ];})
-    .y(function(i) {return DATA.COORDS[2*i+1];})
+    .N(DATA.META.length/2)
+    .xrange.fit(DATA.META)
+    .yrange.fit(DATA.META)
+    .x(function(i) {return DATA.META[2*i  ];})
+    .y(function(i) {return DATA.META[2*i+1];})
     .color(function(i) {
       // set according to the label
       var hue = 180*DATA.EPOCH[i]/10.0;
@@ -107,10 +107,12 @@ metaVis.prototype.child_layout = function child_layout() {
   // gets the width of the main representation div 
   W = parseInt(this.s.style('width'));
 
-  var gutter = W/20;
+  var gutter = W/15;
   var main = W - gutter*7;
-  var box_size = main/2;
-  var dims = [box_size, box_size];
+  var box_size = (main/3)*2;
+  var nav_box_size = main/3;
+  var dims_main = [box_size, box_size];
+  var dims_nav = [nav_box_size,nav_box_size];
   var H = W/2;
 
   this.inner
@@ -119,17 +121,17 @@ metaVis.prototype.child_layout = function child_layout() {
 
   this.meta_display.size(W/300);
   this.meta_display.div
-    // .style('border', '1px solid #959595')
+    .style('border', '1px solid #959595')
     .style('background-color', 'white')
-    .pos([gutter*3,gutter*3])
-    .size(dims); 
+    .pos([gutter*3,gutter*3+nav_box_size])
+    .size(dims_nav); 
 
-  this.main_display.size(W/300);
+  this.main_display.size(W/500);
   this.main_display.div
-    // .style('border', '1px solid #959595')
+    .style('border', '1px solid #959595')
     .style('background-color', 'white')
-    .pos([box_size+gutter*4,gutter*3])
-    .size(dims); 
+    .pos([nav_box_size+gutter*4,gutter*3])
+    .size(dims_main); 
 
   this.info_meta
     .style('position', 'absolute')
@@ -137,7 +139,7 @@ metaVis.prototype.child_layout = function child_layout() {
     .style('width', box_size)
     .style('height', box_size/3)
     .style('left', gutter*3)
-    .style('top', gutter*4+box_size);
+    .style('top', gutter);
 
   return this;
 }

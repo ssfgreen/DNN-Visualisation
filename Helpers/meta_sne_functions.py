@@ -5,7 +5,6 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import matplotlib
-matplotlib.use('TkAgg') # used to avoid attribute error from moviepy
 import matplotlib.pyplot as plt
 import math
 from tsne import bh_sne
@@ -20,6 +19,10 @@ def castPCA2(array):
     transform = pca.fit_transform(array)
     return transform
 
+def castTSNE(array):
+    tsne = TSNE(n_components = array.shape[1])
+    transform = tsne.fit_transform(array)
+    return transform
 
 def varimax(Phi, gamma = 1, q = 20, tol = 1e-6):
     p,k = Phi.shape
@@ -35,7 +38,7 @@ def varimax(Phi, gamma = 1, q = 20, tol = 1e-6):
     return dot(Phi, R)
     
 
-def meta_pca_sne(exID):
+def meta_pca_sne(exID): # put exID back
     # mongo stuff
     dbClient = DatabaseClient()
 
@@ -51,13 +54,26 @@ def meta_pca_sne(exID):
     list_of_coords = experiment['DATA']['TSNE_DATA']
 
     np_list = np.asarray(list_of_coords)
-    print np_list.shape
+    N, X = np_list.shape
+    print "NX", N, X
 
-    labels = np.asarray([1,2,3,4,5,6])
 
-    sne_co = bh_sne(np_list, perplexity=1.0, theta=0.5)
-    plt.scatter(sne_co[:,0], sne_co[:,1], c=labels)
-    plt.show()
+    print "L0T", type(np_list[0])
+    print "L0TI", type(np_list[0][0])
+    print "L0S", np_list[0].shape
+    print "L0", np_list[0]
+    print "L1", np_list[1]
+
+    # labels = np.asarray([1,2,3,4,5,6])
+    np_list = np_list[:,:500]
+
+    # print "LIST", np_list
+    # print "list size:", np_list.shape
+
+    print "META BH"
+    sne_co = bh_sne(np_list, perplexity=10.0, theta=0.5)
+    # plt.scatter(sne_co[:,0], sne_co[:,1], c=labels)
+    # plt.show()
 
     flat_coords = np.reshape(sne_co, (1,-1))
     flat_coords = flat_coords.tolist()[0]
@@ -65,7 +81,7 @@ def meta_pca_sne(exID):
     experiment['DATA']['META'] = flat_coords
 
     updatedObject = dbClient.update(filteredId, experiment)
-    print "updated: ", updatedObject
+    # print "updated: ", updatedObject
 
 
 def tsne_pca(exID):
@@ -79,7 +95,7 @@ def tsne_pca(exID):
       print "No results"
       return
 
-    filteredId = filteredResults[0]['_id']
+    filteredId = filteredResults[4]['_id']
     experiment = dbClient.get(filteredId)
 
     list_of_coords = experiment['DATA']['TSNE_DATA']
@@ -104,7 +120,8 @@ def tsne_pca(exID):
 
     labels = np.asarray([1,2,3,4,5,6])
 
-    sne_pca = bh_sne(np_pca, perplexity=1.0, theta=0.5)
+    print "SNEPCA BH"
+    sne_pca = bh_sne(np_pca, perplexity=9.0, theta=0.5)
     plt.scatter(sne_pca[:,0], sne_pca[:,1], c=labels)
     plt.show()
 
@@ -114,11 +131,11 @@ def tsne_pca(exID):
     experiment['DATA']['PCA'] = flat_coords
 
     updatedObject = dbClient.update(filteredId, experiment)
-    print "updated: ", updatedObject
+    # print "updated: ", updatedObject
 
 
 
 if __name__ == '__main__':
 
   meta_pca_sne()
-  tsne_pca()
+  # tsne_pca()
