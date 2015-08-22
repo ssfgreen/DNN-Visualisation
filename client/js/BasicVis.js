@@ -479,7 +479,7 @@ var BasicVis = new function() {
     // update/reset circle properties
     // using the d3 transition animation at a rate of 200
     // seting the new circle centres by the d3 linear function
-    selection.transition().duration(200)
+    selection.transition().duration(300)
       .attr('cx', function(d, i) { return this_.xmap(data.x(i)); })
       .attr('cy', function(d, i) { return this_.ymap(data.y(i)); });
 

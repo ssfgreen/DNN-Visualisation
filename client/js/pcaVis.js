@@ -39,8 +39,8 @@ var pcaVis = function pcaVis(s) {
     .y(function(i) {return DATA.PCA[2*i+1];})
     .color(function(i) {
       // set according to the label
-      var hue = 180*DATA.EPOCH[i]/10.0;
-      var saturation = DATA.LAYER[i]/10.0;
+      var hue = 180;//*DATA.EPOCH[i]/5;
+      var saturation = DATA.EPOCH[i]/DATA.EPOCH.length;
       var lightness = 0.5;
       return d3.hsl(hue, saturation, lightness);
     });

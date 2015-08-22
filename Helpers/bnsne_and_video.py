@@ -84,7 +84,7 @@ def makeVideo(X_2d,labels):
 
     # doesn't work atm: gives error (AttributeError: 'FigureCanvasMac' object has no attribute ....
     name = "test1.gif"
-    fps = 1
+    fps = 3
     duration = 60 # the number of samples in the array
 
     print "X_2d shape", X_2d.shape
