@@ -120,25 +120,27 @@ layerEpochVis.prototype.child_layout = function child_layout() {
 
   this.layer_display.size(W/300);
   this.layer_display.div
-    .style('border', '1px solid #959595')
+    // .style('border', '1px solid #959595')
     .style('background-color', 'white')
     .pos([gutter*2,H/3])
     .size(dims_nav); 
 
   this.main_display.size(W/400);
   this.main_display.div
-    .style('border', '1px solid #959595')
+    // .style('border', '1px solid #959595')
     .style('background-color', 'white')
     .pos([nav_box_size+gutter*4,gutter])
     .size(dims); 
 
   this.info_layer
     .style('position', 'absolute')
-    .style('font-size', '17px')
+    .style('font-size', '14px')
     .style('width', W)
     .style('height', box_size/3)
+    .style('top', gutter)
+    .style("fill", "red");
+    // .style('color', 'blue');
     // .style('left', gutter*3)
-    .style('top', gutter);
     // .style('text-align', center);
 
   return this;

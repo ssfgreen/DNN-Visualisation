@@ -5,10 +5,42 @@ body {
 a {
   color: white;
   font-size: 15px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+a:hover {
+  color: #fed136;
+}
+
+.laurens {
+  margin-top: 20px;
+
 }
 
 .select-bar {
   font-size: 12px;
+}
+
+.title-set {
+  /*text-align: center;*/
+  font-style: italic;
+  font-family: "Droid Serif";
+  color: #2f7ac7;
+}
+
+.param-info {
+  text-align: center;
+  font-style: italic;
+  font-family: "Droid Serif";
+  color: #2f7ac7;
+}
+
+.expr-title {
+  text-align: center;
+  font-style: italic;
+  font-family: "Droid Serif";
+  color: #2f7ac7;
 }
 
 
@@ -37,7 +69,30 @@ h3.section-subheading {
     text-transform: none;
     font-style: italic;
     font-weight: 400;
-    margin-bottom: 50px
+    margin-bottom: 25px;
+    margin-top:0px ;
+}
+
+.index-links a {
+  padding-left: 15px;
+  padding-right: 15px;
+  color: white; 
+  font-size: 15px;   
+}
+
+.vis-title {
+  text-align: center;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 25px;
+}
+
+.vis-title a {
+  text-align: center;
+  color: rgba(119, 119, 119, 0.46);
+  font-family: "Droid Serif";
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 

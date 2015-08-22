@@ -24,21 +24,23 @@
 
         <div ng-controller="VisController">
             <div>
-                <h2 class="section-heading">Epoch and Layer</h1>
+                <h2 class="section-heading">Epoch and Layer</h2>
                 <h3 class="section-subheading text-muted">The x-axis is layer, the y-axis is epoch</h3>
-                <div>{{human_name}}</div>
-                <div>{{epochs}}</div>
-                <div>{{hiddens}}</div>
+
+                <div class="vis-title">
+                    <a href="/">HOME</a>
+                    <a href="/meta">META</a>
+                    <a href="/pca">PCA</a>
+                    <a href="/layerEpoch">LAYER</a>
+                    <a href="/iter2">IT2</a>
+                </div>
+
+                <div class="expr-title">{{human_name}}</div>
+                <div class="param-info">Epochs: {{epochs}}</div>
+                <div class="param-info">No. Hidden Units: {{hiddens}}</div>
             </div>
-            <div id="layer_vis"></div>
+            <div class="title-set" id="layer_vis"></div>
         </div>
-
-        <a href="/">HOME</a>
-        <a href="/meta">META</a>
-        <a href="/pca">PCA</a>
-        <a href="/layerEpoch">LAYER</a>
-        <a href="/iter2">IT2</a>
-
         
         <script type="text/javascript">
 

@@ -16,21 +16,32 @@
     </head>
 
     <body ng-app="NeuralNet">
-
+        <div class="row">
+          <div class="col-md-10 col-md-offset-1">
         <!-- this contains the image data for the MNIST dataset -->
         <script type="text/javascript" src="js/MNIST.js"></script>
 
         <div ng-controller="VisController">
-            <h1>Hello World</h1>
-            <!-- <div>{{coords}}</div> -->
-            <div id="meta_vis"></div>
-        </div>
 
-        <a href="/">HOME</a>
-        <a href="/meta">META</a>
-        <a href="/pca">PCA</a>
-        <a href="/layerEpoch">LAYER</a>
-        <a href="/iter2">IT2</a>
+            <h2 class="section-heading">Meta tSNE</h2>
+            <h3 class="section-subheading text-muted">tSNE applied to tSNE plots</h3>
+
+                <div class="vis-title">
+                    <a href="/">HOME</a>
+                    <a href="/meta">META</a>
+                    <a href="/pca">PCA</a>
+                    <a href="/layerEpoch">LAYER</a>
+                    <a href="/iter2">IT2</a>
+                </div>
+
+                <div class="expr-title">{{human_name}}</div>
+                <div class="param-info">Epochs: {{epochs}}</div>
+                <div class="param-info">No. Hidden Units: {{hiddens}}</div>
+            </div>
+
+            <div class="title-set" id="meta_vis"></div>
+        </div>
+        </div>
 
         <script type="text/javascript">
 
@@ -48,6 +59,8 @@
         <script type="text/javascript" src="js/BasicVis.js"></script>
         <script type="text/javascript" src="js/metaVis.js"></script>
         <script type="text/javascript" src="app.js"></script>
+
+
     </body>
 
 </html>

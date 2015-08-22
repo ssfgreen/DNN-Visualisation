@@ -27,18 +27,33 @@
     </head>
 
     <body ng-app="NeuralNet">
-
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2">
         <div ng-controller="VisController">
-            <h1>Hello World</h1>
-            <!-- <div>{{coords}}</div> -->
-            <div id="laurens"></div>
+
+            <h2 class="section-heading">Iteration 2</h2>
+            <h3 class="section-subheading text-muted">tSNE in the browser</h3>
+
+                <div class="vis-title">
+                    <a href="/">HOME</a>
+                    <a href="/meta">META</a>
+                    <a href="/pca">PCA</a>
+                    <a href="/layerEpoch">LAYER</a>
+                    <a href="/iter2">IT2</a>
+                </div>
+
+            </div>
+
+
+            
+
+            <div class="expr-title">Experiment: 217</div>
+            <div class="param-info">Epoch: 20, Layer: 3</div>
+            <div class="param-info">No. Hidden Units: 11</div>
+            <div class="laurens title-set" id="laurens"></div>
+        </div>
         </div>
 
-        <a href="/">HOME</a>
-        <a href="/meta">META</a>
-        <a href="/pca">PCA</a>
-        <a href="/layerEpoch">LAYER</a>
-        <a href="/iter2">IT2</a>
 
         <script type="text/javascript" src="app.js"></script>
     </body>

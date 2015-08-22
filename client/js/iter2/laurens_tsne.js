@@ -9,7 +9,11 @@
   var final_dataset;
 
   // temporary variables here
-  var key = "11sMddHxU5VdWvqGsCQ6QcHvo6HBl3xe-k-iMnQc5Hcw";
+  // var key = "11sMddHxU5VdWvqGsCQ6QcHvo6HBl3xe-k-iMnQc5Hcw"; //initial
+  var key = "10-1alq2AZZd8njpAaQNufGh3_VXmFI7xvgTEEZGLzTQ"; // E20 L3
+
+  // https://docs.google.com/spreadsheets/d/10-1alq2AZZd8njpAaQNufGh3_VXmFI7xvgTEEZGLzTQ/edit?usp=sharing
+
   // var key = null;
   var data = "data/CSV/mnist-small.csv";
 
@@ -153,7 +157,7 @@
      // .attr("style", "outline: 1px solid #333;")
      .attr("width", 900)
      .attr("height", 600)
-     .style('background-color', 'white');
+     .style('background-color', 'rgba(119, 119, 119, 0.05)');
 
     // Retrieve all data
     var g = svg.selectAll(".b")
@@ -166,11 +170,11 @@
      .attr("stroke-width", 1)
      .attr("fill",   function(d) { return d ? color(d["label"]) : "#00F"; })
      .attr("stroke", function(d) { return d ? color(d["label"]) : "#00F"; })
-     .attr("fill-opacity", .65)
-     .attr("stroke-opacity", .9)
+     .attr("fill-opacity", 0.9)
+     .attr("stroke-opacity", 1.0)
      .attr("opacity", 1)
      .attr("class", "node1")
-     .attr("r", 6)
+     .attr("r", 2.5)
      .attr("data-legend", function(d) { return d ? d["label"] : ""; })
      .on("mouseover", function(d) {
                           d.focus = 1;
@@ -188,7 +192,8 @@
       .style("position", "absolute")
       .style("visibility", "hidden")
       .attr("text-anchor", "right")
-      .style("font-size", "12px")
+      .style("font-size", "17px")
+      .style("background-color", "white")
       .text(function(d) {
             // console.log(d);
             return d.label;

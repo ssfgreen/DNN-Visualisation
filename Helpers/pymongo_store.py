@@ -175,9 +175,9 @@ def test():
 
 
   # print "filtered: ", filtered
-  for result in results:
-    resultId = result['_id']
-    dbClient.remove(resultId)
+  # for result in results:
+  #   resultId = result['_id']
+  #   dbClient.remove(resultId)
 
   # new_results = dbClient.query()
 

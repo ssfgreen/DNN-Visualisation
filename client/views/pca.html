@@ -16,22 +16,33 @@
     </head>
 
     <body ng-app="NeuralNet">
-
+        <div class="row">
+          <div class="col-md-10 col-md-offset-1">
         <!-- this contains the image data for the MNIST dataset -->
         <script type="text/javascript" src="js/MNIST.js"></script>
 
         <div ng-controller="VisController">
-            <h1>Hello World</h1>
-            <!-- <div>{{coords}}</div> -->
-            <div id="pca_vis"></div>
+
+            <h2 class="section-heading">PCA, Varimax & tSNE</h2>
+            <h3 class="section-subheading text-muted">Plotting similarities in activations</h3>
+
+                <div class="vis-title">
+                    <a href="/">HOME</a>
+                    <a href="/meta">META</a>
+                    <a href="/pca">PCA</a>
+                    <a href="/layerEpoch">LAYER</a>
+                    <a href="/iter2">IT2</a>
+                </div>
+
+                <div class="expr-title">{{human_name}}</div>
+                <div class="param-info">Epochs: {{epochs}}</div>
+                <div class="param-info">No. Hidden Units: {{hiddens}}</div>
+            </div>
+
+            <div class="title-set" id="pca_vis"></div>
         </div>
-
-        <a href="/">HOME</a>
-        <a href="/meta">META</a>
-        <a href="/pca">PCA</a>
-        <a href="/layerEpoch">LAYER</a>
-        <a href="/iter2">IT2</a>
-
+        </div>
+        </div>
         
         <script type="text/javascript">
 
@@ -45,7 +56,7 @@
             var sensible_number_of_points = 500;
 
         </script>
-        
+
         <script type="text/javascript" src="js/BasicVis.js"></script>
         <script type="text/javascript" src="js/pcaVis.js"></script>
         <script type="text/javascript" src="app.js"></script>

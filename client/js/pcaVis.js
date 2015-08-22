@@ -93,7 +93,7 @@ var pcaVis = function pcaVis(s) {
   this.meta_display.mouseover( function(i) {
 
     this_.info_meta.html("<center> Layer: " + DATA.LAYER[i] + " Epoch: " + DATA.EPOCH[i]
-        + " TO ADD MORE! </center");
+        + "</center");
     
     this_.main_display.show(i);
   });
@@ -104,13 +104,15 @@ pcaVis.prototype = Object.create(BasicVis.Container.prototype);
 
 pcaVis.prototype.child_layout = function child_layout() {
 
-  // gets the width of the main representation div 
+ // gets the width of the main representation div 
   W = parseInt(this.s.style('width'));
 
-  var gutter = W/20;
-  var main = W - gutter*7;
-  var box_size = main/2;
-  var dims = [box_size, box_size];
+  var gutter = W/16;
+  var main = W - gutter*6;
+  var main_box_size = (main/3) * 2;
+  var nav_box_size = main/3;
+  var dims = [main_box_size, main_box_size];
+  var dims_nav = [nav_box_size, nav_box_size];
   var H = W/2;
 
   this.inner
@@ -121,23 +123,26 @@ pcaVis.prototype.child_layout = function child_layout() {
   this.meta_display.div
     // .style('border', '1px solid #959595')
     .style('background-color', 'white')
-    .pos([gutter*3,gutter*3])
-    .size(dims); 
+    .pos([gutter*2,H/3])
+    .size(dims_nav); 
 
-  this.main_display.size(W/500);
+  this.main_display.size(W/400);
   this.main_display.div
     // .style('border', '1px solid #959595')
     .style('background-color', 'white')
-    .pos([box_size+gutter*4,gutter*3])
+    .pos([nav_box_size+gutter*4,gutter])
     .size(dims); 
 
   this.info_meta
     .style('position', 'absolute')
-    .style('font-size', '17px')
-    .style('width', box_size)
+    .style('font-size', '14px')
+    .style('width', W)
     .style('height', box_size/3)
-    .style('left', gutter*3)
-    .style('top', gutter*4+box_size);
+    .style('top', gutter)
+    .style("fill", "red");
+    // .style('color', 'blue');
+    // .style('left', gutter*3)
+    // .style('text-align', center);
 
   return this;
 }

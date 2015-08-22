@@ -9,11 +9,11 @@
 
       <link rel="stylesheet" href="css/bootstrap.min.css">
       <link rel="stylesheet" href="css/agency.css">
-      <link rel="stylesheet" href="css/base.css">
       
-
       <script type="text/javascript" src="/js/jquery-2.1.4.min.js"></script>
       <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+
+      <link rel="stylesheet" href="css/base.css">
   </head>
 
   <body ng-app="NeuralNet" class="main-body">
@@ -29,9 +29,9 @@
 
                           <div class = "intro-lead-in">
 
-                              <form name="myForm" style="margin: 0px">
+                              <form name="myForm" style="margin: 0px;">
                                   <label for="repeatSelect"> Repeat select: </label>
-                                  <select class="select-bar" name="repeatSelect" ng-model="result_id">
+                                  <select style="color: grey;" class="select-bar" name="repeatSelect" ng-model="result_id">
                                     <option ng-repeat="result in results" value="{{result.id}}">{{result.name}}</option>
                                   </select>
                               </form>
@@ -40,10 +40,10 @@
 
                           </div>
 
-                          <div style="color: white; font-size: 15px; ">
+                          <div style="index-links">
                             
-                            <a href="/">HOME</a>
-                            <a href="/meta">META</a>
+                            <a class="index-links" href="/">HOME</a>
+                            <a class="index-links" href="/meta">META</a>
                             <a href="/pca">PCA</a>
                             <a href="/layerEpoch">LAYER</a>
                             <a href="/iter2">IT2</a>
