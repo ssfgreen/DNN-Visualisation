@@ -83,7 +83,7 @@ var metaVis = function metaVis(s) {
     .enable_zoom()
     .bindToWindowResize()
 
-    tooltips("text", main_display, labels);
+    tooltips("img", main_display, labels);
   }
 
   // javascript scoping, to ensure it is THIS function

@@ -139,6 +139,10 @@ def layer():
 def iter2():
   return app.send_static_file('views/iter2.html')
 
+@app.route('/iter1')
+def iter1():
+  return app.send_static_file('views/iter1.html')
+
 
 # this is what we're running - sets up the server 
 if __name__ == '__main__':

@@ -1,8 +1,9 @@
 import numpy as np
 import gzip, cPickle
-import matplotlib
-matplotlib.use('TkAgg') # used to avoid attribute error from moviepy
+import matplotlib as mpl
+mpl.use('TkAgg') # used to avoid attribute error from moviepy
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import time
 import os
 import itertools
@@ -92,6 +93,8 @@ def read_and_vid():
         filename = check_create_directory('experiments/gifs')
         filename = "{}/{}.gif".format(filename, exID)
 
+        # print "LSHAPE", labels.shape
+
         makeVideo(NPcoords, labels, no_points, length, filename)
 
 def makeVideo(X_2d,labels,diff, samples,name):
@@ -101,6 +104,21 @@ def makeVideo(X_2d,labels,diff, samples,name):
     # name = "test4.gif"
     fps = 5
     duration = samples # the number of samples in the array
+
+    # z = labels.tolist()
+    # z=labels
+
+    # scaled_z = (z - z.min()) / z.ptp()
+    # labels = plt.cm.coolwarm(scaled_z)
+
+    norm = mpl.colors.Normalize(vmin=0, vmax=10)
+    cmap = cm.jet
+
+    m = cm.ScalarMappable(norm=norm, cmap=cmap)
+    labels = m.to_rgba(labels) 
+    labels = np.reshape(labels, (diff,-1)) 
+
+    print labels.shape
 
     print "X_2d shape", X_2d.shape
 
