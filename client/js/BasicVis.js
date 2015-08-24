@@ -246,7 +246,8 @@ var BasicVis = new function() {
                      'image-rendering:-webkit-optimize-contrast;' +
                      '-ms-interpolation-mode:nearest-neighbor;' +
                      'image-rendering: pixelated;')
-      .style('border', '1px solid #000000')
+      // .style('border', '1px solid #000000')
+      .style("box-shadow", "5px 5px 15px lightgrey")
       .style('width', 1.0 * W)
       .style('height', 1.0 * W);
     // returns with canvas element now defined
@@ -734,13 +735,15 @@ var BasicVis = new function() {
     this._labels = [];
     // set text properties
     this.div
-      .style("background-color", "white")
-      .style("font-size", "130%")
-      .style("padding-left", "2px")
-      .style("padding-right", "2px")
-      .style("padding-top", "1px")
-      .style("padding-bottom", "1px")
-      .style("border", "1px solid black");
+      .style("background-color", "black")
+      .style("color", "white")
+      .style("font-size", "20px")
+      .style("padding-left", "3px")
+      .style("padding-right", "3px")
+      .style("padding-top", "2px")
+      .style("padding-bottom", "2px")
+      .style("box-shadow", "5px 5px 15px lightgrey");
+      // .style("border", "1px solid black");
     // return the new tooltip
     return this;
   };
