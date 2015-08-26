@@ -1,0 +1,32 @@
+{
+  "_ID": 010-1231-23423-4234-2,
+  "HUMAN_NAME": "19-AUG-15, EX.2",
+  "PARAMS": {
+    "BATCH_SIZE": 600,
+    "DATA_FILENAME": "mnist.pkl.gz",
+    "EPOCH": 30,
+    "INPUT_DIM": 784,
+    "LEARNING_RATE": 0.01,
+    "MOMENTUM": 0.9,
+    "NUM_EPOCHS": 30,
+    "NUM_HIDDEN_UNITS": 129,
+    "OUTPUT_DIM": 10,
+    "TRAIN_LOSS": 0.24068426056715722,
+    "VALID_ACCURACY": 96.4375,
+    "VALID_LOSS": 0.1277871899065497
+  },
+  "DATA": {
+    "PCA_COORDS": [2,2,5,4,9,12],
+    "META_COORDS": [0,1,5,1,7,12],
+    "LAYER": [3, 1, 5],
+    "EPOCH": [20,50,10],
+    "TSNE_DATA": [
+        [2,1,4,2,5,3,1,14,40,3],
+        [7,1,10,2,14,4,20,23,40,41],
+        [26,1,90,2,14,2,24,10,90,10]
+    ],
+    "TSNE_LABELS": [1,5,3,2,3],
+    "IMG_LABELS": "AAAAAAEA9AABuPwAAfj8AAH4/AAB+PwAAfj8AAH4/"
+  }
+}
+

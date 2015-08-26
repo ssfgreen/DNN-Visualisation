@@ -108,6 +108,37 @@ def varimax(Phi, gamma = 1, q = 20, tol = 1e-6):
         if d/d_old < tol: break
     return dot(Phi, R)
 
+def twoD_histogram(array, labels, shape, filename):
+    x = array[:,0]
+    y = array[:,1]
+    z = labels[:,0]
+    # Bin the data onto a 10x10 grid
+    # Have to reverse x & y due to row-first indexing
+    zi, yi, xi = np.histogram2d(y, x, bins=(shape,shape), weights=z, normed=False)
+    counts, _, _ = np.histogram2d(y, x, bins=(shape,shape))
+
+    zi = zi / counts
+    zi = np.ma.masked_invalid(zi)
+
+    # ZI is the newly produced image, where the buckets have been filled!
+    print "zi shape", zi.shape
+    # print "xi shape", xi.shape
+    # print "yi shape", yi.shape
+
+    # print "ZI", zi
+    # print "XI", xi
+    # print "YI", yi
+
+    fig, ax = plt.subplots()
+    ax.pcolormesh(xi, yi, zi, edgecolors='black')
+    scat = ax.scatter(x, y, c=z, s=15)
+    fig.colorbar(scat)
+    ax.margins(0.05)
+    plt.savefig(filename)
+    plt.show()
+
+    return zi
+
 def main_original():
     # Generate Random Triangle
     tri = getRandomTriangle(100)
@@ -223,14 +254,52 @@ def new_main():
     sqr3[:,0] = sqr3[:,0] + 10
     sqr3[:,1] = sqr3[:,1]
 
+    # print "shapes before (t,s)", tri.shape, sqr2.shape
+    tri_labels = np.full((100, 1), 10, dtype=np.int)
+    tri2_labels = np.full((100, 1), 8, dtype=np.int)
+    sqr_labels = np.full((100,1), 1, dtype=np.int)
+    sqr2_labels = np.full((100,1), 3, dtype=np.int)
+    sqr3_labels = np.full((100,1), 5, dtype=np.int)
+
+    appended = np.append(tri, sqr, axis=0)
+    appended = np.append(appended, tri2, axis=0)
+    appended = np.append(appended, sqr2, axis=0)
+    appended = np.append(appended, sqr3, axis=0)
+
+    appended_labels = np.append(tri_labels, sqr_labels, axis=0)
+    appended_labels = np.append(appended_labels, tri2_labels, axis=0)
+    appended_labels = np.append(appended_labels, sqr2_labels, axis=0)
+    appended_labels = np.append(appended_labels, sqr3_labels, axis=0)
+
+    print "appended-shape", appended.shape
+    print "appended labels", appended_labels.shape
+
+    histo1 = twoD_histogram(appended, appended_labels, 40, "histo1.png")
+
+    rotate_appended = rotateArray(appended, np.pi/4)    
+
+    histo2 = twoD_histogram(rotate_appended, appended_labels, 40, "histo2.png")
+
+    histo1_rs = np.reshape(histo1, (1,-1))
+    histo2_rs = np.reshape(histo2, (1,-1))
+
+    histo_app = np.append(histo1_rs, histo2_rs, axis=0)
+    histo_lab = [1,2]
+
+    histo_bh = bh_sne(histo_app, perplexity=0.3, theta=0.5)
+    plt.scatter(histo_bh[:,0], histo_bh[:,1], c=histo_lab)
+    plt.savefig('BHafter2d.png')
+    plt.show()
+
     # plot initial
     plt.scatter(sqr[:,0], sqr[:,1], c='b')
     plt.scatter(sqr2[:,0], sqr2[:,1], c='g')
+    plt.scatter(sqr3[:,0], sqr3[:,1], c='k')
     plt.scatter(tri[:,0], tri[:,1], c='y')
     plt.scatter(tri2[:,0], tri2[:,1], c='r')
     x1,x2,y1,y2 = plt.axis()
-    plt.axis((-5,15,-5,15))
-    # plt.savefig('rotatedDataOriginal.png')
+    plt.axis((-1,13,-5,10))
+    plt.savefig('rotatedDataOriginal.png')
     plt.show()
 
     # apply pca
@@ -246,6 +315,7 @@ def new_main():
     sqrCastL = np.reshape(sqrCast, (1,-1))
     sqr2CastL = np.reshape(sqr2Cast, (1,-1))
     sqr3CastL = np.reshape(sqr3Cast, (1,-1))
+
 
     all_ = [triCastL, tri2CastL, sqrCastL, sqr2CastL, sqr3CastL]
 
@@ -268,17 +338,18 @@ def new_main():
     labels = np.asarray([1,2,3,4,5])
 
     plt.scatter(sne_col[:,0], sne_col[:,1], c=labels)
+    plt.savefig('BHafterPCA.png')
     plt.show()
 
-    # plot initial
+    # plot PCA cast
     plt.scatter(sqrCast[:,0], sqrCast[:,1], c='b')
     plt.scatter(sqr2Cast[:,0], sqr2Cast[:,1], c='g')
     plt.scatter(sqr3Cast[:,0], sqr3Cast[:,1], c='k')
     plt.scatter(triCast[:,0], triCast[:,1], c='y')
     plt.scatter(tri2Cast[:,0], tri2Cast[:,1], c='r')
     x1,x2,y1,y2 = plt.axis()
-    plt.axis((-5,15,-5,15))
-    # plt.savefig('rotatedDataOriginal.png')
+    plt.axis((-2,2,-2,2))
+    plt.savefig('PCArotations.png')
     plt.show()
 
     # apply pca varimax to make them orthogonally similar
@@ -294,8 +365,8 @@ def new_main():
     plt.scatter(triVari[:,0], triVari[:,1], c='y')
     plt.scatter(tri2Vari[:,0], tri2Vari[:,1], c='r')
     x1,x2,y1,y2 = plt.axis()
-    plt.axis((-5,15,-5,15))
-    # plt.savefig('rotatedDataOriginal.png')
+    plt.axis((-2,2,-2,2))
+    plt.savefig('VarimaxRotations.png')
     plt.show()
 
     triList = np.reshape(triVari, (1,-1))
@@ -326,6 +397,7 @@ def new_main():
     labels = np.asarray([1,2,3,4,5])
 
     plt.scatter(sne_co[:,0], sne_co[:,1], c=labels)
+    plt.savefig('BHrotations.png')
     plt.show()
 
 

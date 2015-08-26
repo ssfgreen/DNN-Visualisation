@@ -303,6 +303,9 @@ var BasicVis = new function() {
 
 
     if (shape.length == 2) {
+      // indexing the data-array passed in as an array (i.e - each intensity 
+      // value from the MNIST dataset is passed in and set a value on the canvas
+      // correspondingly)
       for (var dx = 0; dx < X; ++dx)
       for (var dy = 0; dy < Y; ++dy) {
         // calculating the position in the image

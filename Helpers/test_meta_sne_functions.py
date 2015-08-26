@@ -13,6 +13,10 @@ from numpy import eye, asarray, dot, sum, diag
 from numpy.linalg import svd
 from pymongo_store import *
 
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import matplotlib as mpl
+
 
 def castPCA2(array):
     pca = PCA(n_components = array.shape[1])
@@ -38,11 +42,11 @@ def varimax(Phi, gamma = 1, q = 20, tol = 1e-6):
     return dot(Phi, R)
     
 
-def meta_pca_sne(exID): # put exID back
+def meta_pca_sne(): # put exID back
     # mongo stuff
     dbClient = DatabaseClient()
 
-    filteredResults = dbClient.query(exID)
+    filteredResults = dbClient.query()
 
     if filteredResults is None:
       print "No results"
@@ -71,7 +75,7 @@ def meta_pca_sne(exID): # put exID back
     # print "list size:", np_list.shape
 
     print "META BH"
-    sne_co = bh_sne(np_list, perplexity=10.0, theta=0.5)
+    sne_co = bh_sne(np_list, perplexity=1.0, theta=0.5)
     # plt.scatter(sne_co[:,0], sne_co[:,1], c=labels)
     # plt.show()
 
@@ -84,12 +88,12 @@ def meta_pca_sne(exID): # put exID back
     # print "updated: ", updatedObject
 
 
-def tsne_pca(exID):
+def tsne_pca():
 
     # mongo stuff
     dbClient = DatabaseClient()
 
-    filteredResults = dbClient.query(exID)
+    filteredResults = dbClient.query()
 
     if filteredResults is None:
       print "No results"
@@ -121,7 +125,7 @@ def tsne_pca(exID):
     labels = np.asarray([1,2,3,4,5,6])
 
     print "SNEPCA BH"
-    sne_pca = bh_sne(np_pca, perplexity=9.0, theta=0.5)
+    sne_pca = bh_sne(np_pca, perplexity=1.0, theta=0.5)
     plt.scatter(sne_pca[:,0], sne_pca[:,1], c=labels)
     plt.show()
 
@@ -133,9 +137,101 @@ def tsne_pca(exID):
     updatedObject = dbClient.update(filteredId, experiment)
     # print "updated: ", updatedObject
 
+def twoD_histogram(array, labels, shape, filename):
+    x = array[:,0]
+    y = array[:,1]
+    z = labels[:,0]
+    # Bin the data onto a 10x10 grid
+    # Have to reverse x & y due to row-first indexing
+    zi, yi, xi = np.histogram2d(y, x, bins=(shape,shape), weights=z, normed=False)
+    counts, _, _ = np.histogram2d(y, x, bins=(shape,shape))
+
+    zi = zi / counts
+    zi = np.ma.masked_invalid(zi)
+
+    # fig, ax = plt.subplots()
+    # ax.pcolormesh(xi, yi, zi, edgecolors='black')
+    # scat = ax.scatter(x, y, c=z, s=15)
+    # fig.colorbar(scat)
+    # ax.margins(0.05)
+    # plt.savefig(filename)
+    # plt.show()
+
+    return zi
+
+def histo_pca():
+    # mongo stuff
+    dbClient = DatabaseClient()
+
+    filteredResults = dbClient.query()
+
+    if filteredResults is None:
+      print "No results"
+      return
+
+    filteredId = filteredResults[1]['_id']
+    experiment = dbClient.get(filteredId)
+
+    list_of_coords = experiment['DATA']['TSNE_DATA']
+    list_of_labels = experiment['DATA']['TSNE_LABELS']
+    labels = np.asarray(list_of_labels)
+    labels = np.reshape(labels, (-1,1))
+    # labels = labels[:,0]
+
+    pca_list = []
+    for i, coords in enumerate(list_of_coords):
+        np_val = np.asarray(coords)
+        coords_array = np.reshape(coords, (-1,2))
+
+        histo = twoD_histogram(coords_array, labels, 100, "./images/hiso{}.png".format(i))
+
+        histo = np.reshape(histo, (1,-1))
+        pca_list.append(histo)
+
+    np_pca = np.asarray(pca_list)
+
+    print "shape", np_pca.shape
+    np_pca = np.reshape(np_pca, (-1,10000))
+    print "shape", np_pca.shape
+    np_pca = np_pca[:45,:500]
+    print "shape", np_pca.shape
+    # errors with infinities again!
+    # np_pca = np_pca[np.logical_not(np.isnan(np_pca))]
+    # np_pca = np_pca[np.isnan(np_pca)] = 0
+    # np_pca[np.isnan(np_pca)] = 0.0
+    # np_pca[np.isinf(np_pca)] = 100000000.0
+    np_pca = np.nan_to_num(np_pca)
+    # A[np.isnan(A)] = 0
+    print "shape", np_pca.shape
+
+    length = len(labels)
+
+    norm = mpl.colors.Normalize(vmin=0, vmax=10)
+    cmap = cm.jet
+
+    m = cm.ScalarMappable(norm=norm, cmap=cmap)
+    labels = m.to_rgba(labels) 
+    labels = np.reshape(labels, (length,-1)) 
+
+
+    print "SNEPCA BH"
+    sne_pca = bh_sne(np_pca, perplexity=10.0, theta=0.5)
+    # sne_pca = castTSNE(np_pca)
+    plt.scatter(sne_pca[:,0], sne_pca[:,1], c=labels)
+    plt.savefig("./images/BHhisto.png")
+    plt.show()
+
+    # flat_coords = np.reshape(sne_pca, (1,-1))
+    # flat_coords = flat_coords.tolist()[0]
+
+    # experiment['DATA']['PCA'] = flat_coords
+
+    # updatedObject = dbClient.update(filteredId, experiment)
+    # print "updated: ", updatedObject
 
 
 if __name__ == '__main__':
 
   meta_pca_sne()
-  # tsne_pca()
+  tsne_pca()
+  histo_pca()
