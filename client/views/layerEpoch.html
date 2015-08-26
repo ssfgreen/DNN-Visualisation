@@ -8,8 +8,10 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.js"></script>
 
-        <script type="text/javascript" src="/js/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/js/lib/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="/js/lib/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/iter3/metaVis.js"></script>
+        <script type="text/javascript" src="js/iter3/MNIST.js"></script>
         
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/base.css">
@@ -18,9 +20,6 @@
     <body ng-app="NeuralNet">
         <div class="row">
           <div class="col-md-10 col-md-offset-1">
-
-        <!-- this contains the image data for the MNIST dataset -->
-        <script type="text/javascript" src="js/MNIST.js"></script>
 
         <div ng-controller="VisController">
             <div>
@@ -40,7 +39,7 @@
                 <div class="param-info">Epochs: {{epochs}}</div>
                 <div class="param-info">No. Hidden Units: {{hiddens}}</div>
             </div>
-            <div class="title-set" id="layer_vis"></div>
+            <div class="title-set" id="meta_vis"></div>
         </div>
         
         <script type="text/javascript">
@@ -54,9 +53,18 @@
             var DATA = coords.DATA;
             var sensible_number_of_points = 500;
 
+            function meta_vis_space() {
+
+              var meta_visd = new metaVis("#meta_vis", mnist_images,
+                              DATA.LAYER, DATA.EPOCH,
+                              DATA.LAYER.length, DATA.LAYER, 
+                              DATA.TSNE_LABELS, DATA.TSNE_DATA, 500);
+              return meta_visd;
+            }
+
+            meta_vis_space();
+
         </script>
-        <script type="text/javascript" src="js/BasicVis.js"></script>
-        <script type="text/javascript" src="js/layerEpochVis.js"></script>
         <script type="text/javascript" src="app.js"></script>
 
         </div>

@@ -11,17 +11,8 @@ from flask.ext.restful import Api, Resource, reqparse
 import json
 
 # import neural net and constuct
-from neural_net import NeuralNet
+from neural_net import *
 
-mongo = [{
-      "id":"4353245325",
-      "url":"./data/JSON/260115175012.json",
-      "name":"Tom's experiment"
-    },{
-      "id":"4353245425",
-      "url":"./data/JSON/271015175012.json",
-      "name":"Sam's experiment"
-    }]
 
 # this is for a single instance get
 class NeuralResource(Resource):
@@ -34,28 +25,6 @@ class NeuralResource(Resource):
     dbClient = DatabaseClient()
 
     experimentOBJ = dbClient.get(_id)
-    # print experimentOBJ
-
-    # tries to get the result from neuralNet class in neural_net
-    # passing in the ID ID!!
-    # url = None
-    # for m in mongo:
-    #   if(m['id'] == ID):
-    #     url = m['url']
-    #     break
-
-    # if url == None:
-    #   return {'data':'FAIL'}
-
-    # data = None
-    # with open(url) as data_file:    
-    #     data = json.load(data_file)
-
-    # try:
-    #   # result = neuralNet.result(ID)
-    #   result = {'data': data}
-    # except Exception as error:
-    #   return str(error), 500
 
     return {'data': experimentOBJ}
 
@@ -71,8 +40,9 @@ class NeuralResources(Resource):
     
     # then tries to run the neural net!
     try:
-      print "DATA RESPONSE: "
+      print "RUNNING NETS!"
       # result = neuralNet.run(data)
+      run_neural_networks()
     except Exception as error:
       return str(error), 500
 
@@ -97,8 +67,7 @@ class NeuralResources(Resource):
       response.append({
           "id": resultId,
           "name": resultHN
-        })
-
+      })
     # return ['one','two']
     return response
 

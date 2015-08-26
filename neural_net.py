@@ -59,6 +59,7 @@ def run_meta_vis():
 
 if __name__ == '__main__':
 
+    print "running"
     # ---- RUN NET - ARGS!! ----
     # run_net(DATA_URL, DATA_FILENAME, NUM_EPOCHS, BATCH_SIZE, 
     # NUM_HIDDEN_UNITS, LEARNING_RATE, MOMENTUM, DEBUG):
@@ -67,4 +68,4 @@ if __name__ == '__main__':
     # 500, 600, 512, 0.01, 0.9, False)
 
     # run_neural_networks()
-    run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',40, 600, 512, 0.01, 0.9, False)
+    # run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',40, 600, 512, 0.01, 0.9, False)
