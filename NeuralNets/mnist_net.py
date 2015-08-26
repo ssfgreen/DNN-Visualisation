@@ -17,13 +17,14 @@ import time
 # sys.path.insert(0, '../Helpers')
 
 # this finds the files in other directories
-sys.path.insert(0, './Helpers')
+sys.path.insert(0, './Helpers/database')
+# sys.path.insert(0, './Helpers/database')
 
 # My Imports
 import h5py
 
 # from pickle_io import write_model_data
-from bn_saving import *
+# from bn_saving import *
 from neural_net_saving import *
 # from meta_sne_functions import *
 

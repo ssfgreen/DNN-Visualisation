@@ -1,0 +1,14 @@
+{
+    "BATCH_SIZE": 600,
+    "DATA_FILENAME": "mnist.pkl.gz",
+    "EPOCH": 1,
+    "INPUT_DIM": 784,
+    "LEARNING_RATE": 0.01,
+    "MOMENTUM": 0.9,
+    "NUM_EPOCHS": 5,
+    "NUM_HIDDEN_UNITS": 1,
+    "OUTPUT_DIM": 10,
+    "TRAIN_LOSS": 2.2917350789515587,
+    "VALID_ACCURACY": 19.34375,
+    "VALID_LOSS": 2.2500289159193274
+}
