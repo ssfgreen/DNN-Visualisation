@@ -78,82 +78,82 @@ class DatabaseClient:
 
 def test():
 
-  dbClient = DatabaseClient()
+  # dbClient = DatabaseClient()
 
 
-  experiment = {
-      "ID": 260115175012,
-      "HUMAN_NAME": "26-JAN-1992, ex-00",
-      "PARAMS": {
-        "BATCH_SIZE": 600,
-        "MOMENTUM": 0.9,
-        "NUM_EPOCHS": 500,
-        "NUM_HIDDEN_UNITS": 512
-      },
-      "DATA": {
-        "COORDS": [1,1,2,2,10,2],
-        "LAYER": [1,2,6],
-        "EPOCH": [2,150,90],
-        "TSNE_DATA": [
-            [1,1,2,2,3,3,4,4,5,5], 
-            [7,7,8,8,9,9,10,11,12,13],
-            [12,12,14,24,15,23,12,14,14,23]
-        ],
-        "TSNE_LABELS": [2,6,3,4,4]
-      }
-    }
+  # experiment = {
+  #     "ID": 260115175012,
+  #     "HUMAN_NAME": "26-JAN-1992, ex-00",
+  #     "PARAMS": {
+  #       "BATCH_SIZE": 600,
+  #       "MOMENTUM": 0.9,
+  #       "NUM_EPOCHS": 500,
+  #       "NUM_HIDDEN_UNITS": 512
+  #     },
+  #     "DATA": {
+  #       "COORDS": [1,1,2,2,10,2],
+  #       "LAYER": [1,2,6],
+  #       "EPOCH": [2,150,90],
+  #       "TSNE_DATA": [
+  #           [1,1,2,2,3,3,4,4,5,5], 
+  #           [7,7,8,8,9,9,10,11,12,13],
+  #           [12,12,14,24,15,23,12,14,14,23]
+  #       ],
+  #       "TSNE_LABELS": [2,6,3,4,4]
+  #     }
+  #   }
 
-  experiment1 = {
-    "ID": 271015175012,
-    "HUMAN_NAME": "27-AUG-2015, ex-1",
-    "PARAMS": {
-      "BATCH_SIZE": 800,
-      "MOMENTUM": 0.7,
-      "NUM_EPOCHS": 200,
-      "NUM_HIDDEN_UNITS": 216
-    },
-    "DATA": {
-      "COORDS": [1,2,3,4,5,6],
-      "LAYER": [3,1,2],
-      "EPOCH": [30,40,10],
-      "TSNE_DATA": [ 
-          [2,2,4,24,5,23,1,14,4,3],
-          [7,7,10,10,14,14,20,20,40,40],
-          [26,26,90,90,14,14,24,100,90,10]
-      ],
-      "TSNE_LABELS": [2,6,3,4,3]
-    }
-  }
+  # experiment1 = {
+  #   "ID": 271015175012,
+  #   "HUMAN_NAME": "27-AUG-2015, ex-1",
+  #   "PARAMS": {
+  #     "BATCH_SIZE": 800,
+  #     "MOMENTUM": 0.7,
+  #     "NUM_EPOCHS": 200,
+  #     "NUM_HIDDEN_UNITS": 216
+  #   },
+  #   "DATA": {
+  #     "COORDS": [1,2,3,4,5,6],
+  #     "LAYER": [3,1,2],
+  #     "EPOCH": [30,40,10],
+  #     "TSNE_DATA": [ 
+  #         [2,2,4,24,5,23,1,14,4,3],
+  #         [7,7,10,10,14,14,20,20,40,40],
+  #         [26,26,90,90,14,14,24,100,90,10]
+  #     ],
+  #     "TSNE_LABELS": [2,6,3,4,3]
+  #   }
+  # }
 
-  experiment2 = {
-      "TDID": 291015175012,
-      "HUMAN_NAME": "20-AUG-2015, ex-12",
-      "PARAMS": {
-        "BATCH_SIZE": 200,
-        "MOMENTUM": 0.4,
-        "NUM_EPOCHS": 400,
-        "NUM_HIDDEN_UNITS": 116
-      },
-      "DATA": {
-        "COORDS": [2,2,5,4,9,12],
-        "LAYER": [3, 1, 5],
-        "EPOCH": [20,50,10],
-        "TSNE_DATA": [
-            [2,1,4,2,5,3,1,14,40,3],
-            [7,1,10,2,14,4,20,23,40,41],
-            [26,1,90,2,14,2,24,10,90,10]
-        ],
-        "TSNE_LABELS": [1,5,3,2,3]
-      }
-    }
+  # experiment2 = {
+  #     "TDID": 291015175012,
+  #     "HUMAN_NAME": "20-AUG-2015, ex-12",
+  #     "PARAMS": {
+  #       "BATCH_SIZE": 200,
+  #       "MOMENTUM": 0.4,
+  #       "NUM_EPOCHS": 400,
+  #       "NUM_HIDDEN_UNITS": 116
+  #     },
+  #     "DATA": {
+  #       "COORDS": [2,2,5,4,9,12],
+  #       "LAYER": [3, 1, 5],
+  #       "EPOCH": [20,50,10],
+  #       "TSNE_DATA": [
+  #           [2,1,4,2,5,3,1,14,40,3],
+  #           [7,1,10,2,14,4,20,23,40,41],
+  #           [26,1,90,2,14,2,24,10,90,10]
+  #       ],
+  #       "TSNE_LABELS": [1,5,3,2,3]
+  #     }
+  #   }
 
   # dbClient.insert(experiment)
   # dbClient.insert(experiment1)
   # dbClient.insert(experiment2)
 
-  results = dbClient.query()
+  # results = dbClient.query()
 
-  print "results: ", results
+  # print "results: ", results
 
   # filtered = dbClient.query(12)
 
