@@ -1,3 +1,6 @@
+""" Tabletop.js """
+
+
 (function(global) {
   "use strict";
 

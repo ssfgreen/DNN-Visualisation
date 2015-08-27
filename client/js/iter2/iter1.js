@@ -1,3 +1,6 @@
+""" Adaptation of Laurens Van Der Maaten's tSNE 
+    Animation using Karpathy's tSNE.js
+"""
 
   // t-SNE.js object and other global variables
   var step_counter = 0;

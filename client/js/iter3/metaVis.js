@@ -1,7 +1,5 @@
- 
+ """ Adapted from Chris Olahs' blog post on Visualising MNIST """
 
-
- 
   // UpdateClass
   //   This is a super class for all
   //   our visualization elements
@@ -42,7 +40,7 @@
 
     // d3Selector
     //   We'll use this in all our constructors
-    //   to get a d3 selection to build on
+    //   to get a d3 selection to build on - taken from Chris Olah
 
     // complex initialisation of the d3.select("string"), gets returned as d3Selector(s)
     this.d3Selector = function(s) {
@@ -196,19 +194,19 @@
     this.zoom_g = this.svg.append('g');
 
     // set up the data 
-    this._data = {};
-    this._data.N = 0;
-    this._data.scale = 1;
-    this._data.color = function() {return 'rgb(50,50,50)';};
-    this._data.x = function() {return 0;};
-    this._data.y = function() {return 0;};
-    this._data.size = function() {return 0;};
-    this._data.mouseover = function() {};
-    this._data.clicked = function() {};
+    this.dataObj = {};
+    this.dataObj.N = 0;
+    this.dataObj.scale = 1;
+    this.dataObj.color = function() {return 'rgb(50,50,50)';};
+    this.dataObj.x = function() {return 0;};
+    this.dataObj.y = function() {return 0;};
+    this.dataObj.size = function() {return 0;};
+    this.dataObj.mouseover = function() {};
+    this.dataObj.clicked = function() {};
 
     // the range of the data, used for scaling linearly
-    this._data.xrange = null;
-    this._data.yrange = null;
+    this.dataObj.xrange = null;
+    this.dataObj.yrange = null;
 
     // assigning the d3.scaling to 
     this.d3ScaleLinearX = d3.scale.linear();
@@ -265,7 +263,7 @@
   //
   ScatterPlotClass.prototype.render = function() {
     // gets the data
-    var data = this._data;
+    var data = this.dataObj;
 
     var that = this;
     // tells d3 to select all the grouped elements, and create svg 'circle'
@@ -286,8 +284,8 @@
     selection.enter().append('circle')
       .attr('r', 0) // seting radius to 0
       .classed({'highlight' : true}) 
-      .on('mouseover', this._data.mouseover)
-      .on('click', this._data.clicked); // on mouseover, call the preset function
+      .on('mouseover', this.dataObj.mouseover)
+      .on('click', this.dataObj.clicked); // on mouseover, call the preset function
 
     // .size() returns number of elements in current section
     // data.scale is calling d3.event.scale() setting the zoom value of the data
@@ -301,8 +299,8 @@
     // using the d3 transition animation at a rate of 200
     // seting the new circle centres by the d3 linear function
     selection.transition().duration(300)
-      .attr('cx', function(d, i) { return that.d3ScaleLinearX(data.x(i)); })
-      .attr('cy', function(d, i) { return that.d3ScaleLinearY(data.y(i)); });
+      .attr('cx', function(d, i) { return that.d3ScaleLinearX(data.x(i));})
+      .attr('cy', function(d, i) { return that.d3ScaleLinearY(data.y(i));});
 
     // resize according to filter above
     selection
@@ -315,46 +313,46 @@
 
   // define N (number of datapoints to filter) with a function...
   ScatterPlotClass.prototype.N = function(val) {
-    if (!arguments.length) return this._data.N;
+    if (!arguments.length) return this.dataObj.N;
     // once the data has been updated, update and rerender the d3 plots
-    this._data.N = val;
+    this.dataObj.N = val;
     this.scheduleUpdate();
     return this;
   };
 
   // if colour changes, update everything
   ScatterPlotClass.prototype.color = function(val) {
-    if (!arguments.length) return this._data.color;
-    this._data.color = make_function(val);
+    if (!arguments.length) return this.dataObj.color;
+    this.dataObj.color = make_function(val);
     this.scheduleUpdate();
     return this;
   };
 
   // if sie changes, update everything
   ScatterPlotClass.prototype.size = function(val) {
-    if (!arguments.length) return this._data.size;
-    this._data.size = make_function(val);
+    if (!arguments.length) return this.dataObj.size;
+    this.dataObj.size = make_function(val);
     this.scheduleUpdate();
     return this;
   };
 
   // if the x,y value changes, update all
   ScatterPlotClass.prototype.x = function(val) {
-    if (!arguments.length) return this._data.x;
-    this._data.x = make_function(val);
+    if (!arguments.length) return this.dataObj.x;
+    this.dataObj.x = make_function(val);
     this.scheduleUpdate();
     return this;
   };
   ScatterPlotClass.prototype.y = function(val) {
-    if (!arguments.length) return this._data.y;
-    this._data.y = make_function(val);
+    if (!arguments.length) return this.dataObj.y;
+    this.dataObj.y = make_function(val);
     this.scheduleUpdate();
     return this;
   };
 
 
   ScatterPlotClass.prototype.xrange = function(val) {
-    if (!arguments.length) return this._data.xrange;
+    if (!arguments.length) return this.dataObj.xrange;
     if (!(val.length == 2)) {
       if (val.length > 5)
         throw Error('xrange(): yrange must be an array of length 2.' +
@@ -363,7 +361,7 @@
                  ' For example, [-1, 1].');
     }
     // val must be [min,max] and therefore an array of length 2
-    this._data.xrange = val;
+    this.dataObj.xrange = val;
     // sets the domain of d3.scale.linear().domain(val) -> i.e the new range
     this.d3ScaleLinearX.domain(val);
     this.scheduleUpdate();
@@ -371,7 +369,7 @@
   };
 
   ScatterPlotClass.prototype.yrange = function(val) {
-    if (!arguments.length) return this._data.yrange;
+    if (!arguments.length) return this.dataObj.yrange;
     if (!(val.length == 2)) {
       if (val.length > 5)
         throw Error('yrange(): yrange must be an array of length 2.' +
@@ -379,25 +377,25 @@
       throw Error('yrange(): yrange must be an array of length 2.' +
                   ' For example, [-1, 1].');
     }
-    this._data.yrange = val;
+    this.dataObj.yrange = val;
     this.d3ScaleLinearY.domain(val);
     this.scheduleUpdate();
     return this;
   };
 
   ScatterPlotClass.prototype.mouseover = function(val) {
-    if (!arguments.length) return this._data.mouseover;
+    if (!arguments.length) return this.dataObj.mouseover;
     // val here is likely to be a function, and will occur when mouseover
-    this._data.mouseover = val;
+    this.dataObj.mouseover = val;
     this.scheduleUpdate();
     return this;
   };
 
 
   ScatterPlotClass.prototype.clicked = function(val) {
-    if (!arguments.length) return this._data.clicked;
+    if (!arguments.length) return this.dataObj.clicked;
     // val here is likely to be a function, and will occur when mouseover
-    this._data.clicked = val;
+    this.dataObj.clicked = val;
     this.scheduleUpdate();
     return this;
   };
@@ -411,7 +409,7 @@
   // updates in response to a zoom event - all d3 and in tutorials
   ScatterPlotClass.prototype._zoomed = function() {
     this.zoom_g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale +")");
-    this._data.scale = d3.event.scale;
+    this.dataObj.scale = d3.event.scale;
     this.scheduleUpdate();
   };
 
@@ -431,11 +429,11 @@
     // here appending <canvas> </canvas> tags 
     this.canvas = this.s.append('canvas');
     // create data object
-    this._data = {};
+    this.dataObj = {};
     // in d3plus, .shape defines the shape of object to place i: i.e "square"??
     // or simply shape: null; in javascript object
-    this._data.shape = null;
-    this._data.imgs = null;
+    this.dataObj.shape = null;
+    this.dataObj.imgs = null;
   };
 
   ImageClass.prototype = new UpdateClass();
@@ -469,8 +467,8 @@
 
     var i = parseInt(i);
     // gets the objects imgs and shape values
-    var imgs = this._data.imgs;
-    var shape = this._data.shape;
+    var imgs = this.dataObj.imgs;
+    var shape = this.dataObj.shape;
 
     if (shape.length == 2) {
       var X = shape[0];
@@ -490,7 +488,7 @@
     // data[1] = red_value_for_pixel2 etc R,G,B,A,R,G,B,A,R,G,B,A etc 
     var imgData = img.data;
 
-    if (!this._data.imgs || !this._data.shape) {
+    if (!this.dataObj.imgs || !this.dataObj.shape) {
       throw Error('ImageClass.show(): Must set ImageClass.imgs() ' +
                   'and ImageClass.shape() before showing image.');
     }
@@ -546,15 +544,15 @@
 
 
   ImageClass.prototype.imgs = function(val) {
-    if (!arguments.length) return this._data.imgs;
-    this._data.imgs = val;
+    if (!arguments.length) return this.dataObj.imgs;
+    this.dataObj.imgs = val;
     return this;
   };
 
 
   // sets the shape (2D / 3D)
   ImageClass.prototype.shape = function(val) {
-    if (!arguments.length) return this._data.shape;
+    if (!arguments.length) return this.dataObj.shape;
 
     // sets the html5 canvas height and width
     if (val.length == 2) {
@@ -566,7 +564,7 @@
         .attr('width', val[1])
         .attr('height', val[2]);
     }
-    this._data.shape = val;
+    this.dataObj.shape = val;
     return this;
   };
 

@@ -1,3 +1,5 @@
+""" tSNE.js - Andrej Karpathy """
+
 // create main global object
 var tsnejs = tsnejs || { REVISION: 'ALPHA' };
 

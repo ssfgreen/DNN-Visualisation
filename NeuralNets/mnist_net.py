@@ -18,17 +18,7 @@ import time
 
 # this finds the files in other directories
 sys.path.insert(0, './Helpers/database')
-# sys.path.insert(0, './Helpers/database')
-
-# My Imports
-import h5py
-
-# from pickle_io import write_model_data
-# from bn_saving import *
 from neural_net_saving import *
-# from meta_sne_functions import *
-
-# inmport tsne plotting and created bn_saving tools
 from tsne import bh_sne
 
 
@@ -317,11 +307,6 @@ class Net:
                     save_params(exID, experiment_folder, "testing", output_layer, self.DATA_FILENAME, self.NUM_EPOCHS, self.BATCH_SIZE, self.NUM_HIDDEN_UNITS, self.LEARNING_RATE, 
                         self.MOMENTUM, epoch, dataset)
 
-                # adding inc ode to save activations
-
-                # X_val = dataset['X_valid']
-                # print (X_val.eval())
-
                 if epoch['number'] % 2 == 0:
                 # if epoch['number'] == 1:
                     num_coords = 500
@@ -360,20 +345,3 @@ if __name__ == '__main__':
     run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz', 
         500, 600, 512, 0.01, 0.9, False)
     # Net1.main()
-
-
-# def change_epochs(epochs):
-#     NUM_EPOCHS = epochs
-
-        # self.DATA_URL = 'http://deeplearning.net/data/mnist/mnist.pkl.gz'
-        # self.DATA_FILENAME = 'mnist.pkl.gz'
-
-        # self.NUM_EPOCHS = 500
-        # self.BATCH_SIZE = 600
-        # self.NUM_HIDDEN_UNITS = 512
-        # self.LEARNING_RATE = 0.01
-        # self.MOMENTUM = 0.9
-        # self.DEBUG = True
-
-    # def __init__(self, DATA_URL, DATA_FILENAME, NUM_EPOCHS, BATCH_SIZE, 
-    #     NUM_HIDDEN_UNITS, LEARNING_RATE, MOMENTUM, DEBUG):

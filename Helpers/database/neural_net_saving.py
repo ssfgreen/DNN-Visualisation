@@ -238,8 +238,10 @@ def plot_activations(exID, exNUM, experiment_folder, epoch, dataset, output_laye
 
     for i, layer in enumerate(th_layers):
         # only care about layers with params
-        if not (layer.get_params() or isinstance(layer, lasagne.layers.FeaturePoolLayer)):
-            continue
+        if not (layer.get_params() or isinstance(layer, lasagne.layers.FeaturePoolLayer)): 
+              continue
+        # if (isinstance(layer, lasagne.layers.MaxPool2DLayer) or isinstance(layer, lasagne.layers.Conv2DLayer) ):
+        #     continue
 
         # gets the activations
         data = lasagne.layers.get_output(layer, X_val, deterministic=True).eval()
@@ -478,7 +480,8 @@ def plot_bn_sne(data, labels, size):
   data1 = data.shape[1]
 
   print "DATA SHAPE", data.shape
-  print "DATA", data
+  # print "DATA", data
+  data = np.reshape(data, (size,-1))
   # dimensionality reduction with bn_sne
   X_2d = bh_sne(data,perplexity=30.0, theta=0.5)
   print "plot shape: ", X_2d.shape
