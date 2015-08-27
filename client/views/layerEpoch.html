@@ -53,7 +53,13 @@
             var DATA = coords.DATA;
             var sensible_number_of_points = 500;
 
-            function meta_vis_space() {
+            function meta_vis() {
+
+            /* DOMselector, b64_imageArray,
+              ControlX_coords, ControlY_coords,
+              ControlNumber_coords, Control_Colour,
+              dataLabels, tsneData,
+              sensible_number_of_points */
 
               var meta_visd = new metaVis("#meta_vis", mnist_images,
                               DATA.LAYER, DATA.EPOCH,
@@ -62,7 +68,7 @@
               return meta_visd;
             }
 
-            meta_vis_space();
+            meta_vis();
 
         </script>
         <script type="text/javascript" src="app.js"></script>
