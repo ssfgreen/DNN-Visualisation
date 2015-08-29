@@ -17,7 +17,7 @@ import time
 # sys.path.insert(0, '../Helpers')
 
 # this finds the files in other directories
-sys.path.insert(0, './Helpers/database')
+sys.path.insert(0, './helpers/database')
 from neural_net_saving import *
 from tsne import bh_sne
 
@@ -128,7 +128,7 @@ class Net:
         l_hidden1 = lasagne.layers.DenseLayer(
             l_in,
             num_units=num_hidden_units,
-            nonlinearity=lasagne.nonlinearities.rectify,
+            nonlinearity=lasagne.nonlinearities.rectify,#sigmoid
         )
         l_hidden1_dropout = lasagne.layers.DropoutLayer(
             l_hidden1,
@@ -139,7 +139,7 @@ class Net:
         l_hidden2 = lasagne.layers.DenseLayer(
             l_hidden1_dropout,
             num_units=num_hidden_units,
-            nonlinearity=lasagne.nonlinearities.rectify,
+            nonlinearity=lasagne.nonlinearities.rectify,#sigmoid,
         )
         l_hidden2_dropout = lasagne.layers.DropoutLayer(
             l_hidden2,
@@ -343,5 +343,5 @@ def run_net(DATA_URL, DATA_FILENAME, NUM_EPOCHS, BATCH_SIZE,
 if __name__ == '__main__':
         
     run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz', 
-        500, 600, 512, 0.01, 0.9, False)
+        500, 100, 800, 0.01, 0.9, False)
     # Net1.main()

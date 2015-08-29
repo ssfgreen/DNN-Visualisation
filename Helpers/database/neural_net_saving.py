@@ -30,7 +30,10 @@ from numpy import eye, asarray, dot, sum, diag
 from numpy.linalg import svd
 
 # from bn_saving import *
+import matplotlib as mpl
+mpl.use('TkAgg') # used to avoid attribute error from moviepy
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 ''' this file is very important!
     - it saves the weights, activations and parameters from the neural network
@@ -90,7 +93,7 @@ def save_weight_bias_slow(experiment_folder, filename, epoch, output_layer, endi
             with open(filename, 'w') as f:
                 pickle.dump(data, f)
         elif(out_type=="NUMPY"):
-            numpy.savetxt(filename_unique, data, delimiter=",")
+            np.savetxt(filename_unique, data, delimiter=",")
         elif(out_type=="JSON"):
             print "yet to be implemented"
 
@@ -133,7 +136,7 @@ def save_activations_test(experiment_folder, filename, epoch, dataset, output_la
             with open(filename, 'w') as f:
                 pickle.dump(data, f)
         elif(out_type=="NUMPY"):
-            numpy.savetxt(filename_unique, data, delimiter=",")
+            np.savetxt(filename_unique, data, delimiter=",")
         elif(out_type=="JSON"):
             print "yet to be implemented"
         
@@ -162,7 +165,7 @@ def save_params (exID, experiment_folder, filename, output_layer, datafile, num_
     data_directory = check_create_directory(subfolder)
 
     params_to_save = dict(
-        # NETWORK_LAYERS = [str(type(layer)) for layer in lasagne.layers.get_all_layers(output_layer)],
+        NETWORK_LAYERS = [str(type(layer)) for layer in lasagne.layers.get_all_layers(output_layer)],
         DATA_FILENAME = datafile,
         NUM_EPOCHS = num_epochs,
         BATCH_SIZE = batch_size,
@@ -367,9 +370,11 @@ def meta_pca_sne(exID, experiment_folder): # put exID back
 
     # print "LIST", np_list
     # print "list size:", np_list.shape
-
-    print "META BH", np_list.shape
-    sne_co = bh_sne(np_list, perplexity=9.0, theta=0.5)
+    perp = 10.0
+    no_data_shape = np_list.shape[0]
+    if (((perp / 3.0) - 1.0) < no_data_shape):
+      perp = (no_data_shape / 3.0) - 1.0
+    sne_co = bh_sne(np_list, perplexity=perp, theta=0.5)
 
     print "sne", sne_co.shape
     print "labels", labels
@@ -393,6 +398,9 @@ def tsne_pca(exID, experiment_folder):
     plot_subfolder = experiment_folder + "/meta_pca"
     plot_data_directory = check_create_directory(plot_subfolder)
     filename = "{}/PCA".format(plot_data_directory)
+
+    pca_plots_subfolder = experiment_folder + "pca_plots"
+    pca_plot_data_directory = check_create_directory(plot_subfolder)
     # mongo stuff
     dbClient = DatabaseClient()
 
@@ -406,9 +414,21 @@ def tsne_pca(exID, experiment_folder):
     experiment = dbClient.get(filteredId)
 
     list_of_coords = experiment['DATA']['TSNE_DATA']
+    labels = experiment['DATA']['TSNE_LABELS']
+    labels_len = len(labels)
+    labels = np.asarray(labels)
+    
+
+    # reshaping the labels so they work in the plot
+    norm = mpl.colors.Normalize(vmin=0, vmax=10)
+    cmap = cm.jet
+
+    m = cm.ScalarMappable(norm=norm, cmap=cmap)
+    labels = m.to_rgba(labels) 
+    labels = np.reshape(labels, (labels_len,-1))
 
     pca_list = []
-    for coords in list_of_coords:
+    for i, coords in enumerate(list_of_coords):
         np_val = np.asarray(coords)
         coords_array = np.reshape(coords, (-1,2))
 
@@ -418,8 +438,29 @@ def tsne_pca(exID, experiment_folder):
         cast_veri = varimax(cast)
         print "cast_veri", cast_veri.shape
         cast_veri = np.reshape(cast_veri, (1,-1))
+        flat_coords = cast_veri.tolist()[0]
         print "veri ", cast_veri.shape
+
+        if "PCA_DATA" in experiment["DATA"]:
+            existing_coords = experiment["DATA"]["PCA_DATA"]
+            print "some lists"
+            existing_coords.append(flat_coords)
+        else:
+            print "no lists"
+            existing_coords = [flat_coords]
+
+        experiment["DATA"]["PCA_DATA"] = existing_coords
+
         pca_list.append(cast_veri)
+
+        cast_veri = np.reshape(cast_veri, (-1,2))
+        #  save the plots
+        plt.clf()
+        plt.cla()
+        pca_filename = "{}/pca-{}".format(pca_plot_data_directory,i) 
+        plt.scatter(cast_veri[:, 0], cast_veri[:, 1], c=labels)
+        plt.savefig(pca_filename, dpi=120)
+        plt.close()
 
     np_pca = np.asarray(pca_list)
 
@@ -443,7 +484,11 @@ def tsne_pca(exID, experiment_folder):
     print "pca: ", np_pca.shape
 
     print "SNEPCA BH"
-    sne_pca = bh_sne(np_pca, perplexity=9.0, theta=0.5)
+    perp = 10.0
+    no_data_shape = np_pca.shape[0]
+    if (((perp / 3.0) - 1.0) < no_data_shape):
+      perp = (no_data_shape / 3.0) - 1.0
+    sne_pca = bh_sne(np_pca, perplexity=perp, theta=0.5)
 
     # clear previous plot figure
     plt.clf()

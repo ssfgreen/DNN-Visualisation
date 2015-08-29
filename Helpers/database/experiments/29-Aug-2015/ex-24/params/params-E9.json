@@ -1,0 +1,22 @@
+{
+    "BATCH_SIZE": 600,
+    "DATA_FILENAME": "mnist.pkl.gz",
+    "EPOCH": 9,
+    "INPUT_DIM": 784,
+    "LEARNING_RATE": 0.01,
+    "MOMENTUM": 0.9,
+    "NETWORK_LAYERS": [
+        "<class 'lasagne.layers.input.InputLayer'>",
+        "<class 'lasagne.layers.dense.DenseLayer'>",
+        "<class 'lasagne.layers.noise.DropoutLayer'>",
+        "<class 'lasagne.layers.dense.DenseLayer'>",
+        "<class 'lasagne.layers.noise.DropoutLayer'>",
+        "<class 'lasagne.layers.dense.DenseLayer'>"
+    ],
+    "NUM_EPOCHS": 9,
+    "NUM_HIDDEN_UNITS": 1,
+    "OUTPUT_DIM": 10,
+    "TRAIN_LOSS": 2.2565902630111689,
+    "VALID_ACCURACY": 19.604166666666668,
+    "VALID_LOSS": 2.1905716400789843
+}

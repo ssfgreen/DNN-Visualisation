@@ -11,6 +11,7 @@ import lasagne
 import theano
 import theano.tensor as T
 import time
+import math
 
 # from mnist import _load_data
 # from mnist import create_iter_functions
@@ -106,8 +107,10 @@ class ConvNet:
 
         num_hidden_units = self.NUM_HIDDEN_UNITS
         no_filters = self.NUM_FILTERS # 32
+        double_filters = no_filters*2
         filter_size = self.FILTER_SIZE # 5,5
         pool_size = self.POOL_SIZE # 2,2
+        
 
         l_in = lasagne.layers.InputLayer(
             shape=(batch_size, 1, input_width, input_height),
@@ -124,8 +127,8 @@ class ConvNet:
 
         l_conv2 = lasagne.layers.Conv2DLayer(
             l_pool1,
-            num_filters=no_filters,
-            filter_size=(filter_size, filter_size),
+            num_filters=double_filters,
+            filter_size=(2, 2),
             nonlinearity=lasagne.nonlinearities.rectify,
             W=lasagne.init.GlorotUniform(),
             )
@@ -140,15 +143,8 @@ class ConvNet:
 
         l_hidden1_dropout = lasagne.layers.DropoutLayer(l_hidden1, p=0.5)
 
-        l_hidden2 = lasagne.layers.DenseLayer(
-            l_hidden1_dropout,
-            num_units=num_hidden_units,
-            nonlinearity=lasagne.nonlinearities.rectify,
-            )
-        l_hidden2_dropout = lasagne.layers.DropoutLayer(l_hidden2, p=0.5)
-
         l_out = lasagne.layers.DenseLayer(
-            l_hidden2_dropout,
+            l_hidden1_dropout,
             num_units=output_dim,
             nonlinearity=lasagne.nonlinearities.softmax,
             W=lasagne.init.GlorotUniform(),
@@ -315,8 +311,9 @@ class ConvNet:
                     num_coords = 500
                     plot_activations(exID, experiment_num, experiment_folder, epoch, dataset, output_layer, num_coords)
                 if epoch['number'] % 10 == 0:
-                    save_activations_test(experiment_folder, "testing", epoch, dataset, output_layer, "csv", "NUMPY")
-                    save_weight_bias_slow(experiment_folder, "testing", epoch, output_layer, "csv", "NUMPY")
+                    print("not saving yet")
+                    # save_activations_test(experiment_folder, "testing", epoch, dataset, output_layer, "csv", "NUMPY")
+                    # save_weight_bias_slow(experiment_folder, "testing", epoch, output_layer, "csv", "NUMPY")
 
                 if epoch['number'] >= num_epochs:
                     # save_params(output_layer, datafile, num_epochs, batch_size, num_hidden_units, learning_rate
@@ -346,7 +343,7 @@ def run_conv_net(DATA_URL, DATA_FILENAME, NUM_EPOCHS, BATCH_SIZE,
 
 if __name__ == '__main__':
     run_conv_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',
-        30, 10000, 256, 0.01, 0.9, 32, 5, 2, False)
+        30, 10000, 500, 0.01, 0.9, 32, 5, 2, False)
 
 
 # def run_net(DATA_URL, DATA_FILENAME, NUM_EPOCHS, BATCH_SIZE, 

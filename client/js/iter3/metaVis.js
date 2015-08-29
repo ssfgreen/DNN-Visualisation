@@ -1,4 +1,4 @@
- """ Adapted from Chris Olahs' blog post on Visualising MNIST """
+ // """ Adapted from Chris Olahs' blog post on Visualising MNIST """
 
   // UpdateClass
   //   This is a super class for all

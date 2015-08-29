@@ -3,6 +3,7 @@ import math
 sys.path.insert(0, './NeuralNets')
 
 from mnist_net import *
+from mnist_conv import *
 
 
 class NeuralNet:
@@ -45,27 +46,40 @@ def run_neural_networks():
     
     last_value = -1;
 
-    for x in power_range(1, 510, 2):
-        epoch = int(x)
-        if epoch != last_value:
-            print epoch
-            run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',30, 600, epoch, 0.01, 0.9, False)
+    for x in power_range(1,1400, 1.7):
+        units = int(x)
+        if units != last_value:
+            print units
+            run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',9, 600, units, 0.01, 0.9, False)
             run_meta_vis()
-            last_value = epoch
+            last_value = units
+
+
+def run_conv_nets():
+    last_value = -1;
+
+    for x in power_range(1,160, 1.5):
+        filters = int(x)
+        if filters != last_value:
+            print filters
+            run_conv_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',
+        15, 10000, 500, 0.01, 0.9, filters, 5, 2, False)
+            run_meta_vis()
+            last_value = filters
+
 
 def run_meta_vis():
     print 'hello'
 
 
 if __name__ == '__main__':
-
-    print "running"
+    run_neural_networks()
+    # run_conv_nets()
     # ---- RUN NET - ARGS!! ----
     # run_net(DATA_URL, DATA_FILENAME, NUM_EPOCHS, BATCH_SIZE, 
     # NUM_HIDDEN_UNITS, LEARNING_RATE, MOMENTUM, DEBUG):
 
-    # run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz', 
-    # 500, 600, 512, 0.01, 0.9, False)
-
-    # run_neural_networks()
-    # run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',40, 600, 512, 0.01, 0.9, False)
+    # ---- RUN CONV NET - ARGS!! ----
+    # run_conv_net(DATA_URL, DATA_FILENAME, NUM_EPOCHS, BATCH_SIZE, 
+    #         NUM_HIDDEN_UNITS, LEARNING_RATE, MOMENTUM, NUM_FILTERS, FILTER_SIZE,
+    #         POOL_SIZE, DEBUG)
