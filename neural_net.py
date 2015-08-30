@@ -50,7 +50,7 @@ def run_neural_networks():
         units = int(x)
         if units != last_value:
             print units
-            run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',9, 600, units, 0.01, 0.9, False)
+            run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',30, 600, units, 0.01, 0.9, False)
             run_meta_vis()
             last_value = units
 

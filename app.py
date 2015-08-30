@@ -64,10 +64,11 @@ class NeuralResources(Resource):
     for result in results:
       resultId = result['_id']
       resultHN = result['HUMAN_NAME']
-      response.append({
-          "id": resultId,
-          "name": resultHN
-      })
+      if "META" in result["DATA"]:
+        response.append({
+            "id": resultId,
+            "name": resultHN
+        })
     # return ['one','two']
     return response
 
