@@ -46,13 +46,21 @@ def run_neural_networks():
     
     last_value = -1;
 
-    for x in power_range(1,1400, 1.7):
+    # change the number of units
+    for x in power_range(1,2300, 1.7):
         units = int(x)
         if units != last_value:
             print units
-            run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',30, 600, units, 0.01, 0.9, False)
-            run_meta_vis()
+            run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',50, 600, units, 0.01, 0.9, False)
             last_value = units
+
+    # change the momentum
+    for x in power_range(0.1,1.0,1.7):
+        m = x
+        if m != last_value:
+            print m
+            run_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',30, 600, 800, 0.01, m, False)
+            last_value = m
 
 
 def run_conv_nets():
@@ -62,9 +70,7 @@ def run_conv_nets():
         filters = int(x)
         if filters != last_value:
             print filters
-            run_conv_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz',
-        15, 10000, 500, 0.01, 0.9, filters, 5, 2, False)
-            run_meta_vis()
+            run_conv_net('http://deeplearning.net/data/mnist/mnist.pkl.gz', 'mnist.pkl.gz', 20, 10000, 500, 0.01, 0.9, filters, 5, 2, False)
             last_value = filters
 
 
@@ -74,7 +80,7 @@ def run_meta_vis():
 
 if __name__ == '__main__':
     run_neural_networks()
-    # run_conv_nets()
+    run_conv_nets()
     # ---- RUN NET - ARGS!! ----
     # run_net(DATA_URL, DATA_FILENAME, NUM_EPOCHS, BATCH_SIZE, 
     # NUM_HIDDEN_UNITS, LEARNING_RATE, MOMENTUM, DEBUG):

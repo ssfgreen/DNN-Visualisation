@@ -2,6 +2,19 @@
 //     Animation using Karpathy's tSNE.js
 // """
 
+/*
+
+Data uploaded as
+
+LABEL,VAR1,VAR2,...,VARN
+1, 0.221234,1.12312,......0.1231231
+4, 0.22234,0.12312,......0.123113211
+
+etc
+*/
+
+
+
   // t-SNE.js object and other global variables
   var step_counter = 0;
   var max_counter = 500;
@@ -67,16 +80,18 @@
       final_dataset[i].focus = 0;
     }
 
-
     dists = computeDistances(data);
 
     tsne.initDataDist(dists); 
 
+    // not actually used
     all_labels = new Array(data.length);
 
+    // puts the labels into an array
     for(var i = 0; i < data.length; i++) {
        all_labels[i] = data[i]["label"];
         }
+    // data["label"] still needed to plot the colours correclty
 
     render();
     runner = setInterval(step, 0);

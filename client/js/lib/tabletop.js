@@ -1,4 +1,4 @@
-""" Tabletop.js """
+// Tabletop.js
 
 
 (function(global) {
