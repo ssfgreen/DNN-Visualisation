@@ -17,7 +17,7 @@ import time
 # sys.path.insert(0, '../Helpers')
 
 # this finds the files in other directories
-sys.path.insert(0, './helpers/database')
+sys.path.insert(0, './Helpers/database')
 from neural_net_saving import *
 from tsne import bh_sne
 

@@ -2,6 +2,7 @@
 import os
 import sys
 sys.path.insert(0, './Helpers')
+sys.path.insert(0,'./Helpers/database')
 
 from pymongo_store import*
 
@@ -78,7 +79,7 @@ neuralNet = NeuralNet()
 #Find static path from relative path
 currentPath = os.getcwd()
 basePath = os.path.split(currentPath)[0]
-staticPath = os.path.join(basePath,'SamProject-master','client')
+staticPath = os.path.join(basePath,'nnvis','client')
 print(staticPath)
 
 #Define static folder path
